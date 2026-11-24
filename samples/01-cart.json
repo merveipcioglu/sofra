@@ -1,0 +1,56 @@
+{
+  "prompt": 1,
+  "name": "cart",
+  "user_id": "u_ok",
+  "expected": "a data-backed cart_summary",
+  "turns": [
+    {
+      "user": "What is in my cart?",
+      "response": {
+        "version": "1",
+        "blocks": [
+          {
+            "type": "text",
+            "markdown": "Your cart has fries and a milkshake from one restaurant. It meets the minimum order. Add 100 TL more to get free delivery."
+          },
+          {
+            "type": "cart_summary",
+            "restaurant_id": "rst_04",
+            "items": [
+              {
+                "name": "Patates Kızartması",
+                "qty": 1,
+                "price_try": 65
+              },
+              {
+                "name": "Milkshake",
+                "qty": 1,
+                "price_try": 85
+              }
+            ],
+            "subtotal_try": 150,
+            "delivery_fee_try": 25,
+            "total_try": 175,
+            "min_order_try": 100,
+            "meets_minimum": true
+          },
+          {
+            "type": "suggested_actions",
+            "chips": [
+              "Show the menu",
+              "Place the order"
+            ]
+          }
+        ],
+        "audit": {
+          "user_id": "u_ok",
+          "intent": "get_cart",
+          "tools_called": [
+            "get_cart"
+          ],
+          "decision": "answered"
+        }
+      }
+    }
+  ]
+}

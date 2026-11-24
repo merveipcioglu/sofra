@@ -1,0 +1,4 @@
+.env
+trace*.jsonl
+.DS_Store
+README.pdf

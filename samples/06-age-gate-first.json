@@ -1,0 +1,45 @@
+{
+  "prompt": 6,
+  "name": "age-gate-first",
+  "user_id": "u_unverified",
+  "expected": "age_18_plus; the age gate comes before the minimum",
+  "turns": [
+    {
+      "user": "Order 1 energy drink from Ege Balık",
+      "response": {
+        "version": "1",
+        "blocks": [
+          {
+            "type": "text",
+            "markdown": "I couldn't place this order. Energy Drink Zero is sold only to users aged 18 or over who have completed age verification, and your account isn't verified yet. You can verify under Profile \u003e Age Verification, then ask me again."
+          },
+          {
+            "type": "verification_gate",
+            "requirement": "age_18_plus",
+            "reason": "Energy Drink Zero is sold only to users aged 18+ who have completed age verification.",
+            "cta": "Complete age verification under Profile \u003e Age Verification."
+          },
+          {
+            "type": "suggested_actions",
+            "chips": [
+              "Show Ege Balık menu",
+              "Ask how age verification works"
+            ]
+          }
+        ],
+        "audit": {
+          "user_id": "u_unverified",
+          "intent": "place_order",
+          "tools_called": [
+            "search_restaurants",
+            "get_user",
+            "get_menu",
+            "place_order",
+            "search_knowledge"
+          ],
+          "decision": "blocked"
+        }
+      }
+    }
+  ]
+}

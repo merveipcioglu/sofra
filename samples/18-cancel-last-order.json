@@ -1,0 +1,85 @@
+{
+  "prompt": 18,
+  "name": "cancel-last-order",
+  "user_id": "u_ok",
+  "expected": "confirmation_prompt, then cancel_order runs on the separate confirming turn",
+  "turns": [
+    {
+      "user": "Cancel my last order",
+      "response": {
+        "version": "1",
+        "blocks": [
+          {
+            "type": "text",
+            "markdown": "Your latest order is the Burger Stop order (u_ok_o9, 260 TL, status: received). Do you want me to cancel it? Please confirm."
+          },
+          {
+            "type": "confirmation_prompt",
+            "action": "cancel_order",
+            "summary": "Cancel your Burger Stop order.",
+            "params": {
+              "order_id": "u_ok_o9"
+            },
+            "confirm_token": "uCm8bRBQGkxbz6X6Q4dvNw.hbbnjhzlzKTVI9YBhP4wjUhMlwv1XwiqLNiTvaBA1qA",
+            "expires_at": "2026-08-20T12:05:00+03:00"
+          },
+          {
+            "type": "suggested_actions",
+            "chips": [
+              "Confirm cancellation",
+              "Show my orders"
+            ]
+          }
+        ],
+        "audit": {
+          "user_id": "u_ok",
+          "intent": "cancel_order",
+          "tools_called": [
+            "list_orders",
+            "cancel_order"
+          ],
+          "decision": "needs_confirmation"
+        }
+      }
+    },
+    {
+      "user": "confirm",
+      "response": {
+        "version": "1",
+        "blocks": [
+          {
+            "type": "text",
+            "markdown": "Your Burger Stop order (u_ok_o9) is cancelled. The 260 TL is being refunded by the payments system to your original payment method."
+          },
+          {
+            "type": "order_summary",
+            "order_id": "u_ok_o9",
+            "restaurant": "Burger Stop",
+            "total_try": 260,
+            "status": "cancelled",
+            "event": "cancelled",
+            "refund": {
+              "to_wallet_try": 0,
+              "to_card_try": 0,
+              "order_by_payments_system": true
+            }
+          },
+          {
+            "type": "suggested_actions",
+            "chips": [
+              "Show my orders"
+            ]
+          }
+        ],
+        "audit": {
+          "user_id": "u_ok",
+          "intent": "cancel_order",
+          "tools_called": [
+            "cancel_order"
+          ],
+          "decision": "answered"
+        }
+      }
+    }
+  ]
+}

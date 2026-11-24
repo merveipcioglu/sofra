@@ -1,0 +1,43 @@
+{
+  "prompt": 13,
+  "name": "item-unavailable",
+  "user_id": "u_ok",
+  "expected": "item_unavailable",
+  "turns": [
+    {
+      "user": "Order künefe from Köfteci Ramiz",
+      "response": {
+        "version": "1",
+        "blocks": [
+          {
+            "type": "text",
+            "markdown": "Künefe is currently unavailable at Köfteci Ramiz, so I couldn't order it. The restaurant has other items available, such as Izgara Köfte, Ayran and Ev Yapımı Limonata."
+          },
+          {
+            "type": "verification_gate",
+            "requirement": "item_unavailable",
+            "reason": "Künefe is currently unavailable at Köfteci Ramiz.",
+            "cta": "Choose another item from the menu."
+          },
+          {
+            "type": "suggested_actions",
+            "chips": [
+              "Show Köfteci Ramiz menu",
+              "Find other restaurants with künefe"
+            ]
+          }
+        ],
+        "audit": {
+          "user_id": "u_ok",
+          "intent": "place_order",
+          "tools_called": [
+            "search_restaurants",
+            "get_menu",
+            "place_order"
+          ],
+          "decision": "blocked"
+        }
+      }
+    }
+  ]
+}

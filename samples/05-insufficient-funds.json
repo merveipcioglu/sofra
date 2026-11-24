@@ -1,0 +1,44 @@
+{
+  "prompt": 5,
+  "name": "insufficient-funds",
+  "user_id": "u_lowbalance",
+  "expected": "sufficient_funds, nothing executed",
+  "turns": [
+    {
+      "user": "Order levrek from Ege Balık",
+      "response": {
+        "version": "1",
+        "blocks": [
+          {
+            "type": "text",
+            "markdown": "I couldn't place the Levrek Izgara order from Ege Balık. Your wallet balance is 30.00 TL, you have no saved card, and you're 290.00 TL short of the 320.00 TL total. Once you've topped up your wallet or saved a card, I can try again."
+          },
+          {
+            "type": "verification_gate",
+            "requirement": "sufficient_funds",
+            "reason": "The wallet balance 30.00 TL does not cover 320.00 TL and there is no saved card: 290.00 TL short.",
+            "cta": "Top up your wallet or add a saved card."
+          },
+          {
+            "type": "suggested_actions",
+            "chips": [
+              "Show my cart",
+              "Show Ege Balık menu",
+              "Show my orders"
+            ]
+          }
+        ],
+        "audit": {
+          "user_id": "u_lowbalance",
+          "intent": "place_order",
+          "tools_called": [
+            "search_restaurants",
+            "get_menu",
+            "place_order"
+          ],
+          "decision": "blocked"
+        }
+      }
+    }
+  ]
+}

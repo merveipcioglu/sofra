@@ -1,0 +1,41 @@
+{
+  "prompt": 19,
+  "name": "cancel-delivered",
+  "user_id": "u_ok",
+  "expected": "not_cancellable, nothing executed, no confirmation_prompt",
+  "turns": [
+    {
+      "user": "Cancel order u_ok_o1",
+      "response": {
+        "version": "1",
+        "blocks": [
+          {
+            "type": "text",
+            "markdown": "I can't cancel order u_ok_o1. It has already been delivered, and an order can only be cancelled before the restaurant starts preparing it."
+          },
+          {
+            "type": "verification_gate",
+            "requirement": "not_cancellable",
+            "reason": "Order u_ok_o1 is delivered; an order can be cancelled only before the restaurant starts preparing it.",
+            "cta": "If something is wrong with the order, report an issue from the order details."
+          },
+          {
+            "type": "suggested_actions",
+            "chips": [
+              "Show my orders",
+              "Ask about refunds"
+            ]
+          }
+        ],
+        "audit": {
+          "user_id": "u_ok",
+          "intent": "cancel_order",
+          "tools_called": [
+            "cancel_order"
+          ],
+          "decision": "blocked"
+        }
+      }
+    }
+  ]
+}

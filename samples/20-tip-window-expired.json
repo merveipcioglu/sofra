@@ -1,0 +1,41 @@
+{
+  "prompt": 20,
+  "name": "tip-window-expired",
+  "user_id": "u_ok",
+  "expected": "tip_window_expired",
+  "turns": [
+    {
+      "user": "Leave the courier a 50 TL tip on u_ok_o1",
+      "response": {
+        "version": "1",
+        "blocks": [
+          {
+            "type": "text",
+            "markdown": "I couldn't add the tip. Order u_ok_o1 was delivered on 2026-07-10, and tips can only be left within 7 days after delivery. That window has passed. No tip was added."
+          },
+          {
+            "type": "verification_gate",
+            "requirement": "tip_window_expired",
+            "reason": "Order u_ok_o1 was delivered on 2026-07-10; tips can be left within 7 days after delivery.",
+            "cta": "Tips can no longer be left on this order."
+          },
+          {
+            "type": "suggested_actions",
+            "chips": [
+              "Show my orders"
+            ]
+          }
+        ],
+        "audit": {
+          "user_id": "u_ok",
+          "intent": "add_tip",
+          "tools_called": [
+            "add_tip",
+            "search_knowledge"
+          ],
+          "decision": "blocked"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "prompt": 11,
+  "name": "calories-unknown",
+  "user_id": "u_ok",
+  "expected": "not in the knowledge base: unknown",
+  "turns": [
+    {
+      "user": "What is the calorie value of the Köfte?",
+      "response": {
+        "version": "1",
+        "blocks": [
+          {
+            "type": "text",
+            "markdown": "Sorry, calorie information for the Köfte isn't available to me. I can show you a restaurant's menu, with its prices and availability, if that helps."
+          },
+          {
+            "type": "suggested_actions",
+            "chips": [
+              "Find restaurants serving köfte",
+              "Show a menu"
+            ]
+          }
+        ],
+        "audit": {
+          "user_id": "u_ok",
+          "intent": "policy_question",
+          "tools_called": [
+            "search_knowledge"
+          ],
+          "decision": "unknown",
+          "reason": "no knowledge document returned this turn supports the answer"
+        }
+      }
+    }
+  ]
+}

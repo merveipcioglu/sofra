@@ -1,0 +1,547 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://sofra.example/ui_spec.schema.json",
+  "title": "Sofra — Generative UI response",
+  "description": "The only valid output format the agent may return. NOT free text, HTML or JS — only these typed blocks. Extended from the starting schema; each addition is justified in README.md, section 11.",
+  "type": "object",
+  "required": [
+    "version",
+    "blocks",
+    "audit"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "type": "string",
+      "const": "1"
+    },
+    "blocks": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/definitions/block"
+      }
+    },
+    "audit": {
+      "description": "REQUIRED. The machine-readable decision record for the response. For some behaviors (clarify, for example) this is the only reliable carrier of the decision state; it cannot be inferred from the blocks.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "decision"
+      ],
+      "properties": {
+        "user_id": {
+          "type": "string"
+        },
+        "intent": {
+          "type": "string"
+        },
+        "tools_called": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "decision": {
+          "type": "string",
+          "enum": [
+            "answered",
+            "needs_confirmation",
+            "blocked",
+            "clarify",
+            "refused",
+            "unknown"
+          ]
+        },
+        "reason": {
+          "type": "string"
+        },
+        "kb_doc_ids": {
+          "description": "Knowledge-base documents the answer rests on, best first; the first is the primary source.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "token_rejection": {
+          "description": "Why a confirmation could not be used.",
+          "type": "string",
+          "enum": [
+            "malformed",
+            "unknown",
+            "bad_signature",
+            "wrong_user",
+            "already_used",
+            "superseded",
+            "expired",
+            "params_mismatch",
+            "state_changed",
+            "same_turn"
+          ]
+        }
+      }
+    }
+  },
+  "definitions": {
+    "block": {
+      "oneOf": [
+        {
+          "$ref": "#/definitions/text"
+        },
+        {
+          "$ref": "#/definitions/restaurant_card"
+        },
+        {
+          "$ref": "#/definitions/menu_item"
+        },
+        {
+          "$ref": "#/definitions/cart_summary"
+        },
+        {
+          "$ref": "#/definitions/order_summary"
+        },
+        {
+          "$ref": "#/definitions/order_history"
+        },
+        {
+          "$ref": "#/definitions/confirmation_prompt"
+        },
+        {
+          "$ref": "#/definitions/verification_gate"
+        },
+        {
+          "$ref": "#/definitions/suggested_actions"
+        },
+        {
+          "$ref": "#/definitions/error"
+        },
+        {
+          "$ref": "#/definitions/citation"
+        }
+      ]
+    },
+    "text": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "markdown"
+      ],
+      "properties": {
+        "type": {
+          "const": "text"
+        },
+        "markdown": {
+          "type": "string"
+        }
+      }
+    },
+    "restaurant_card": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "restaurant_id",
+        "name"
+      ],
+      "properties": {
+        "type": {
+          "const": "restaurant_card"
+        },
+        "restaurant_id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "cuisine": {
+          "type": "string"
+        },
+        "rating": {
+          "type": "number"
+        },
+        "delivery_fee_try": {
+          "type": "number"
+        },
+        "min_order_try": {
+          "type": "number"
+        },
+        "eta_min": {
+          "type": "integer"
+        },
+        "district": {
+          "type": "string"
+        }
+      }
+    },
+    "menu_item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "item_id",
+        "name",
+        "price_try",
+        "available",
+        "age_restricted"
+      ],
+      "properties": {
+        "type": {
+          "const": "menu_item"
+        },
+        "item_id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "price_try": {
+          "type": "number"
+        },
+        "available": {
+          "type": "boolean"
+        },
+        "age_restricted": {
+          "type": "boolean"
+        },
+        "category": {
+          "type": "string"
+        }
+      }
+    },
+    "cart_summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "items",
+        "total_try"
+      ],
+      "properties": {
+        "type": {
+          "const": "cart_summary"
+        },
+        "restaurant_id": {
+          "type": "string"
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "name",
+              "qty",
+              "price_try"
+            ],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "qty": {
+                "type": "integer"
+              },
+              "price_try": {
+                "type": "number"
+              }
+            }
+          }
+        },
+        "subtotal_try": {
+          "type": "number"
+        },
+        "delivery_fee_try": {
+          "type": "number"
+        },
+        "total_try": {
+          "type": "number"
+        },
+        "min_order_try": {
+          "type": "number"
+        },
+        "meets_minimum": {
+          "type": "boolean"
+        }
+      }
+    },
+    "order_summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "order_id",
+        "status",
+        "event"
+      ],
+      "properties": {
+        "type": {
+          "const": "order_summary"
+        },
+        "order_id": {
+          "type": "string"
+        },
+        "restaurant": {
+          "type": "string"
+        },
+        "total_try": {
+          "type": "number",
+          "description": "The order's total, for placed and cancelled."
+        },
+        "status": {
+          "type": "string"
+        },
+        "eta_min": {
+          "type": "integer"
+        },
+        "event": {
+          "type": "string",
+          "enum": [
+            "placed",
+            "cancelled",
+            "tip_added"
+          ]
+        },
+        "tip_try": {
+          "type": "number",
+          "description": "The tip's amount, for tip_added."
+        },
+        "refund": {
+          "type": "object",
+          "description": "For cancelled: what the cancellation paid back, the order and the tips left on it. The wallet share is credited at once; the card share is returned by the payments system in 3-5 business days (pol_refund).",
+          "additionalProperties": false,
+          "required": [
+            "to_wallet_try",
+            "to_card_try"
+          ],
+          "properties": {
+            "to_wallet_try": {
+              "type": "number"
+            },
+            "to_card_try": {
+              "type": "number"
+            },
+            "order_by_payments_system": {
+              "type": "boolean",
+              "description": "The order does not record how it was paid, so its total is refunded by the payments system and is in neither figure."
+            }
+          }
+        }
+      },
+      "description": "Receipt of an action that was executed. Never used to list past orders (see order_history)."
+    },
+    "confirmation_prompt": {
+      "description": "A REQUIRED intermediate step for sensitive (irreversible or payment) actions. The action is NOT EXECUTED here; the user must confirm explicitly on a separate turn. The confirm_token is single-use and bound to params; if params change, the token is invalid.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "action",
+        "summary",
+        "params",
+        "confirm_token",
+        "expires_at"
+      ],
+      "properties": {
+        "type": {
+          "const": "confirmation_prompt"
+        },
+        "action": {
+          "type": "string",
+          "enum": [
+            "place_order",
+            "cancel_order",
+            "add_tip"
+          ]
+        },
+        "summary": {
+          "type": "string"
+        },
+        "params": {
+          "type": "object",
+          "description": "The action's request as the tool takes it; sent back unchanged with confirm_token on the next turn."
+        },
+        "confirm_token": {
+          "type": "string"
+        },
+        "expires_at": {
+          "type": "string",
+          "description": "ISO-8601. An expired token is rejected."
+        },
+        "assumptions": {
+          "description": "Assumptions behind this action, stated to the user before approval.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "payment": {
+          "type": "object",
+          "description": "How the amount will be collected: the wallet first, the rest from the saved card. Part of what the user approves.",
+          "additionalProperties": false,
+          "required": [
+            "from_wallet_try",
+            "from_card_try"
+          ],
+          "properties": {
+            "from_wallet_try": {
+              "type": "number"
+            },
+            "from_card_try": {
+              "type": "number"
+            }
+          }
+        }
+      }
+    },
+    "verification_gate": {
+      "description": "Shown when an action is stopped at a gate. The action is NEVER executed.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "requirement",
+        "reason",
+        "cta"
+      ],
+      "properties": {
+        "type": {
+          "const": "verification_gate"
+        },
+        "requirement": {
+          "type": "string",
+          "enum": [
+            "out_of_service_area",
+            "item_unavailable",
+            "age_18_plus",
+            "min_order",
+            "sufficient_funds",
+            "not_cancellable",
+            "tip_window_expired"
+          ]
+        },
+        "reason": {
+          "type": "string"
+        },
+        "cta": {
+          "type": "string"
+        }
+      }
+    },
+    "suggested_actions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "chips"
+      ],
+      "properties": {
+        "type": {
+          "const": "suggested_actions"
+        },
+        "chips": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "error": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "code",
+        "message"
+      ],
+      "properties": {
+        "type": {
+          "const": "error"
+        },
+        "code": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "order_history": {
+      "description": "Read-only list of past and active orders. Order notes are not shown: they are user-written data.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "orders"
+      ],
+      "properties": {
+        "type": {
+          "const": "order_history"
+        },
+        "orders": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "order_id",
+              "date",
+              "status"
+            ],
+            "properties": {
+              "order_id": {
+                "type": "string"
+              },
+              "date": {
+                "type": "string",
+                "description": "YYYY-MM-DD"
+              },
+              "restaurant": {
+                "type": "string"
+              },
+              "total_try": {
+                "type": "number"
+              },
+              "status": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "citation": {
+      "description": "A knowledge-base document the answer rests on.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "doc_id",
+        "title",
+        "category"
+      ],
+      "properties": {
+        "type": {
+          "const": "citation"
+        },
+        "doc_id": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "category": {
+          "type": "string",
+          "enum": [
+            "policy",
+            "faq",
+            "howto"
+          ]
+        },
+        "date": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

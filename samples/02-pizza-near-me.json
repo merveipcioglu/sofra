@@ -1,0 +1,57 @@
+{
+  "prompt": 2,
+  "name": "pizza-near-me",
+  "user_id": "u_ok",
+  "expected": "the two Italian restaurants that deliver to Kadıköy (Napoli Fırın 4.6, Pizza Locale 3.9) → restaurant_card",
+  "turns": [
+    {
+      "user": "Is there a pizza place near me?",
+      "response": {
+        "version": "1",
+        "blocks": [
+          {
+            "type": "text",
+            "markdown": "Yes, two pizza places deliver to you in Kadıköy: Napoli Fırın (4.6★) and Pizza Locale (3.9★). Details are in the cards."
+          },
+          {
+            "type": "restaurant_card",
+            "restaurant_id": "rst_11",
+            "name": "Napoli Fırın",
+            "cuisine": "Italian",
+            "rating": 4.6,
+            "delivery_fee_try": 20,
+            "min_order_try": 120,
+            "eta_min": 30,
+            "district": "Kadıköy"
+          },
+          {
+            "type": "restaurant_card",
+            "restaurant_id": "rst_02",
+            "name": "Pizza Locale",
+            "cuisine": "Italian",
+            "rating": 3.9,
+            "delivery_fee_try": 30,
+            "min_order_try": 100,
+            "eta_min": 35,
+            "district": "Kadıköy"
+          },
+          {
+            "type": "suggested_actions",
+            "chips": [
+              "Show Napoli Fırın menu",
+              "Show Pizza Locale menu"
+            ]
+          }
+        ],
+        "audit": {
+          "user_id": "u_ok",
+          "intent": "find_restaurants",
+          "tools_called": [
+            "search_restaurants"
+          ],
+          "decision": "answered"
+        }
+      }
+    }
+  ]
+}

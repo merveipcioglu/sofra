@@ -1,0 +1,110 @@
+{
+  "prompt": 21,
+  "name": "screen-confirm",
+  "user_id": "u_ok",
+  "expected": "prompt 4 on the screen: the order is created",
+  "turns": [
+    {
+      "user": "Order 2 cheeseburgers from Burger Stop",
+      "response": {
+        "version": "1",
+        "blocks": [
+          {
+            "type": "text",
+            "markdown": "Your Burger Stop cart already has Patates Kızartması ×1 and Milkshake ×1. As it stands, they'd be included with the 2 cheeseburgers, for a total of 540 TL paid from your wallet.\n\nDo you want to confirm that, or order only the 2 cheeseburgers?"
+          },
+          {
+            "type": "cart_summary",
+            "items": [
+              {
+                "name": "Patates Kızartması",
+                "qty": 1,
+                "price_try": 65
+              },
+              {
+                "name": "Milkshake",
+                "qty": 1,
+                "price_try": 85
+              },
+              {
+                "name": "Cheeseburger",
+                "qty": 2,
+                "price_try": 195
+              }
+            ],
+            "subtotal_try": 540,
+            "delivery_fee_try": 0,
+            "total_try": 540,
+            "min_order_try": 100,
+            "meets_minimum": true
+          },
+          {
+            "type": "confirmation_prompt",
+            "action": "place_order",
+            "summary": "Place an order at Burger Stop for 540.00 TL. Paid from your wallet (540.00 TL).",
+            "params": {
+              "items": [
+                {
+                  "item_id": "itm_013",
+                  "qty": 2
+                }
+              ],
+              "restaurant_id": "rst_04"
+            },
+            "confirm_token": "fBtioPIgTLyXmj8cjrtjaw.2iwgEBcjMLeyMx_YFR473uO-DTLvm7Ufl1lInQTDJhA",
+            "expires_at": "2026-08-20T12:05:00+03:00",
+            "assumptions": [
+              "Your Burger Stop cart already holds Patates Kızartması ×1, Milkshake ×1; they are included in this order, and the cart is emptied when it is placed."
+            ],
+            "payment": {
+              "from_wallet_try": 540,
+              "from_card_try": 0
+            }
+          },
+          {
+            "type": "suggested_actions",
+            "chips": [
+              "Confirm order with cart items",
+              "Order only the 2 cheeseburgers",
+              "Show my cart"
+            ]
+          }
+        ],
+        "audit": {
+          "user_id": "u_ok",
+          "intent": "place_order",
+          "tools_called": [
+            "search_restaurants",
+            "get_menu",
+            "place_order"
+          ],
+          "decision": "needs_confirmation"
+        }
+      }
+    },
+    {
+      "user": "/confirm fBtioPIgTLyXmj8cjrtjaw.2iwgEBcjMLeyMx_YFR473uO-DTLvm7Ufl1lInQTDJhA",
+      "response": {
+        "version": "1",
+        "blocks": [
+          {
+            "type": "order_summary",
+            "order_id": "ord_7c1b62a0f2204cbc979a3f1c8ebb636b",
+            "restaurant": "Burger Stop",
+            "total_try": 540,
+            "status": "received",
+            "event": "placed"
+          }
+        ],
+        "audit": {
+          "user_id": "u_ok",
+          "intent": "confirm_on_screen",
+          "tools_called": [
+            "place_order"
+          ],
+          "decision": "answered"
+        }
+      }
+    }
+  ]
+}
