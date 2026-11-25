@@ -11,7 +11,7 @@
         "blocks": [
           {
             "type": "text",
-            "markdown": "Yes, two pizza places deliver to your district (Kadıköy). Napoli Fırın has the higher rating (4.6)."
+            "markdown": "Yes, two pizza places deliver to you in Kadıköy: Napoli Fırın (rated 4.6) and Pizza Locale (rated 3.9). Napoli Fırın has the better rating."
           },
           {
             "type": "restaurant_card",

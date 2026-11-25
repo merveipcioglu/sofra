@@ -11,7 +11,7 @@
         "blocks": [
           {
             "type": "text",
-            "markdown": "Your Burger Stop cart already has Patates Kızartması ×1 and Milkshake ×1. They would be included with the 2 cheeseburgers, for a total of 540 TL, paid from your wallet. Do you want to confirm this, or order only the 2 cheeseburgers?"
+            "markdown": "Your cart already has Patates Kızartması ×1 and Milkshake ×1 from Burger Stop, so they'd be included with the 2 cheeseburgers. The total would be 540 TL, paid from your wallet. Do you want to confirm that, or order only the 2 cheeseburgers?"
           },
           {
             "type": "cart_summary",
@@ -52,7 +52,7 @@
               ],
               "restaurant_id": "rst_04"
             },
-            "confirm_token": "c6NvuVW4BjEiIh2zAfxVSw.0jQuyJRPmBVruB7l0kukjVly5QeikaCJS6plTWsefog",
+            "confirm_token": "E-mKkT-kJaBA2DkZKw03fQ.XQ68WnbshfQe6VcZ4dTyrBPK70KYT0m8y5-YOiVuvBU",
             "expires_at": "2026-08-20T12:05:00+03:00",
             "assumptions": [
               "Your Burger Stop cart already holds Patates Kızartması ×1, Milkshake ×1; they are included in this order, and the cart is emptied when it is placed."
@@ -84,13 +84,13 @@
       }
     },
     {
-      "user": "/confirm c6NvuVW4BjEiIh2zAfxVSw.0jQuyJRPmBVruB7l0kukjVly5QeikaCJS6plTWsefog",
+      "user": "/confirm E-mKkT-kJaBA2DkZKw03fQ.XQ68WnbshfQe6VcZ4dTyrBPK70KYT0m8y5-YOiVuvBU",
       "response": {
         "version": "1",
         "blocks": [
           {
             "type": "order_summary",
-            "order_id": "ord_73a36fb955b8063122221db301fc554b",
+            "order_id": "ord_13e98a913fa425a040d839192b0d377d",
             "restaurant": "Burger Stop",
             "total_try": 540,
             "status": "received",
@@ -108,14 +108,14 @@
       }
     },
     {
-      "user": "/confirm c6NvuVW4BjEiIh2zAfxVSw.0jQuyJRPmBVruB7l0kukjVly5QeikaCJS6plTWsefog",
+      "user": "/confirm E-mKkT-kJaBA2DkZKw03fQ.XQ68WnbshfQe6VcZ4dTyrBPK70KYT0m8y5-YOiVuvBU",
       "response": {
         "version": "1",
         "blocks": [
           {
             "type": "error",
             "code": "already_used",
-            "message": "This confirmation was already used (ord_73a36fb955b8063122221db301fc554b); nothing more was done."
+            "message": "This confirmation was already used (ord_13e98a913fa425a040d839192b0d377d); nothing more was done."
           }
         ],
         "audit": {

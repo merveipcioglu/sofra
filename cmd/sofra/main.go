@@ -50,7 +50,7 @@ func main() {
 	}
 }
 
-const usage = "usage: sofra chat [-user <user_id>] | sofra scenarios [-only 3,14] [-trace <dir>]"
+const usage = "usage: sofra chat [-user <user_id>] | sofra scenarios [-only 3,14] [-trace <dir>] | sofra eval [-only ev_05,ev_12]"
 
 func run(ctx context.Context, args []string) error {
 	if len(args) == 0 {
@@ -61,6 +61,8 @@ func run(ctx context.Context, args []string) error {
 		return runChat(ctx, args[1:])
 	case "scenarios":
 		return runScenarios(ctx, args[1:])
+	case "eval":
+		return runEval(ctx, args[1:])
 	default:
 		return errors.New(usage)
 	}

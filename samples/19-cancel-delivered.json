@@ -22,7 +22,8 @@
           {
             "type": "suggested_actions",
             "chips": [
-              "Show my orders"
+              "Show my orders",
+              "Ask about refunds"
             ]
           }
         ],

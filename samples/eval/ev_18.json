@@ -1,0 +1,1 @@
+{"version":"1","blocks":[{"type":"error","code":"malformed","message":"This confirmation is not valid, so nothing was done."}],"audit":{"user_id":"u_ok","intent":"confirm_typed_token","decision":"refused","token_rejection":"malformed"}}

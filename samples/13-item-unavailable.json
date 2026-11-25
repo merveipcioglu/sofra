@@ -11,7 +11,7 @@
         "blocks": [
           {
             "type": "text",
-            "markdown": "Sorry, Künefe is currently unavailable at Köfteci Ramiz, so I couldn't order it. The other items on the menu (Izgara Köfte, Ayran, Limonata) are available if you'd like one of those instead."
+            "markdown": "Sorry, Künefe is currently unavailable at Köfteci Ramiz, so I can't order it. Available items are Izgara Köfte, Ayran and Ev Yapımı Limonata. I can order one of those instead, or look for künefe at other restaurants."
           },
           {
             "type": "verification_gate",
@@ -23,7 +23,7 @@
             "type": "suggested_actions",
             "chips": [
               "Show Köfteci Ramiz menu",
-              "Find other restaurants with künefe"
+              "Find restaurants with künefe near me"
             ]
           }
         ],

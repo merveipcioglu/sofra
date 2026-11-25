@@ -149,6 +149,7 @@ type delivered struct {
 		SubtotalTRY  float64 `json:"subtotal_try"`
 		ConfirmToken string  `json:"confirm_token"`
 		Requirement  string  `json:"requirement"`
+		Markdown     string  `json:"markdown"`
 	} `json:"blocks"`
 	Audit struct {
 		Decision       ui.Decision `json:"decision"`

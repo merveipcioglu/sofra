@@ -11,7 +11,7 @@
         "blocks": [
           {
             "type": "text",
-            "markdown": "Your latest order is the Burger Stop order (u_ok_o9, 260 TL, status: received). Do you want me to cancel it? Please confirm."
+            "markdown": "Your latest order is the Burger Stop order from 2026-08-19 (260 TL, status: received). It can be cancelled. Do you confirm you want to cancel it?"
           },
           {
             "type": "confirmation_prompt",
@@ -20,7 +20,7 @@
             "params": {
               "order_id": "u_ok_o9"
             },
-            "confirm_token": "05lZyQF543nZVCgg0AYEiQ.Xi_am8nr4U6nL7jeRQKPnSvjkSGexW-r69B27p5JBL0",
+            "confirm_token": "o1ZJMQCUBTieUq3PLs4Ktw.NXrHo9Cd00IVF3NQDxV0dBg7O7Y86e8Js6xsJcf6Sek",
             "expires_at": "2026-08-20T12:05:00+03:00"
           },
           {
@@ -49,7 +49,7 @@
         "blocks": [
           {
             "type": "text",
-            "markdown": "Your Burger Stop order (u_ok_o9) is cancelled. The payments system refunds the 260.00 TL to your original payment method."
+            "markdown": "Your Burger Stop order (u_ok_o9) is cancelled. The 260 TL is being refunded by the payments system to the way you paid."
           },
           {
             "type": "order_summary",

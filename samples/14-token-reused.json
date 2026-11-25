@@ -11,7 +11,7 @@
         "blocks": [
           {
             "type": "text",
-            "markdown": "Your Burger Stop cart already holds 1 Patates Kızartması and 1 Milkshake. Those would be included in this order along with the 2 cheeseburgers. The total would be 540 TL, paid from your wallet.\n\nDo you confirm this order? If you want only the 2 cheeseburgers, tell me and I'll order just those."
+            "markdown": "Your cart at Burger Stop already holds 1 Patates Kızartması and 1 Milkshake. As it stands, they would be included with the 2 cheeseburgers, for a total of 540 TL paid from your wallet. Confirm to place that order, or tell me if you want only the 2 cheeseburgers."
           },
           {
             "type": "cart_summary",
@@ -52,7 +52,7 @@
               ],
               "restaurant_id": "rst_04"
             },
-            "confirm_token": "P7qKtkTIyFzHuEb4qGcDDw.OU9n-vH4ZGnd1R9fOElIKA6Fvh96LvYLEeYjWqYeovw",
+            "confirm_token": "AeB255EiPil6V_DL2MTebw.BFKUDwpT-4RTWPCm7h45V0Ir_bi4n9MlK5BEhHe57BY",
             "expires_at": "2026-08-20T12:05:00+03:00",
             "assumptions": [
               "Your Burger Stop cart already holds Patates Kızartması ×1, Milkshake ×1; they are included in this order, and the cart is emptied when it is placed."
@@ -67,7 +67,7 @@
             "chips": [
               "Confirm order",
               "Order only the cheeseburgers",
-              "Show cart"
+              "Show my cart"
             ]
           }
         ],
@@ -90,11 +90,11 @@
         "blocks": [
           {
             "type": "text",
-            "markdown": "Your order is placed. It includes 2 cheeseburgers plus the fries and milkshake that were already in your cart. The total is 540 TL, and the restaurant has received it."
+            "markdown": "Your order is placed. It includes the 2 cheeseburgers plus the Patates Kızartması and Milkshake that were already in your cart. The total is 540 TL, and the restaurant has received it."
           },
           {
             "type": "order_summary",
-            "order_id": "ord_3fba8ab644c8c85cc7b846f8a867030f",
+            "order_id": "ord_01e076e791223e297a57f0cbd8c4de6f",
             "restaurant": "Burger Stop",
             "total_try": 540,
             "status": "received",
@@ -103,8 +103,8 @@
           {
             "type": "suggested_actions",
             "chips": [
-              "Show orders",
-              "Add a tip"
+              "Show my orders",
+              "Tip the courier"
             ]
           }
         ],
@@ -125,7 +125,7 @@
         "blocks": [
           {
             "type": "text",
-            "markdown": "Nothing new was ordered. Your earlier confirmation had already been used, and that order is placed.\n\nThe system issued a new confirmation for a second order of 2 cheeseburgers. The total is 390 TL: 260 TL from your wallet and 130 TL from your card. Only confirm if you want another order of 2 cheeseburgers."
+            "markdown": "Your earlier order was already placed, so that confirmation was used and this one executed nothing. I've issued a new confirmation for another order of 2 cheeseburgers. It would total 390 TL, with 260 TL from your wallet and 130 TL from your card. Confirm only if you want a second order."
           },
           {
             "type": "cart_summary",
@@ -156,7 +156,7 @@
               ],
               "restaurant_id": "rst_04"
             },
-            "confirm_token": "JSoq6_XcGzQyymFSMEXeSg.JeGUNZFoQQSv7HEQW1CJzDT1dgmvJALWHp7OcUYjHjE",
+            "confirm_token": "qWeaZDZl69zzabra-IYbKg.bkqpUwFHCmPjzXTm1SXV-3Gg6YT1hnDMvjToz-npQ6A",
             "expires_at": "2026-08-20T12:05:00+03:00",
             "payment": {
               "from_wallet_try": 260,
@@ -166,9 +166,8 @@
           {
             "type": "suggested_actions",
             "chips": [
-              "Show orders",
               "Confirm second order",
-              "Show cart"
+              "Show my orders"
             ]
           }
         ],

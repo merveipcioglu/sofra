@@ -11,7 +11,7 @@
         "blocks": [
           {
             "type": "text",
-            "markdown": "Your cart at Burger Stop already has Patates Kızartması ×1 and Milkshake ×1. They would be included with the 2 cheeseburgers, for a total of 540 TL paid from your wallet.\n\nDo you want to confirm that, or order only the 2 cheeseburgers?"
+            "markdown": "Your cart at Burger Stop already has Patates Kızartması ×1 and Milkshake ×1, so they'd be included with the 2 cheeseburgers. The total would be 540 TL, paid from your wallet.\n\nDo you confirm this order, or should I order only the 2 cheeseburgers?"
           },
           {
             "type": "cart_summary",
@@ -52,7 +52,7 @@
               ],
               "restaurant_id": "rst_04"
             },
-            "confirm_token": "DdR3GdsgvAmSorS5voGIxw.rhfOO0bgk6xjO2INBVV7OIlFSxfEUCs-WTD8dP_tF3g",
+            "confirm_token": "HwQk0SANEoULcD7kRQhc8Q.GEss6AFLZtkDeUKGnSkXl16lopbjjwpxKp69R_pWI9c",
             "expires_at": "2026-08-20T12:05:00+03:00",
             "assumptions": [
               "Your Burger Stop cart already holds Patates Kızartması ×1, Milkshake ×1; they are included in this order, and the cart is emptied when it is placed."
@@ -90,7 +90,7 @@
         "blocks": [
           {
             "type": "text",
-            "markdown": "Nothing is ordered yet. Because you changed the quantity, I need a new confirmation.\n\nThe order is 5 cheeseburgers plus the Patates Kızartması ×1 and Milkshake ×1 already in your cart. The total is 1125 TL. 800 TL comes from your wallet and 325 TL is charged to your card.\n\nDo you confirm this order?"
+            "markdown": "Nothing is ordered yet. I've updated it to 5 cheeseburgers, which needs a new confirmation. Your cart's Patates Kızartması ×1 and Milkshake ×1 are still included. The total is 1125 TL: 800 TL from your wallet and 325 TL from your card.\n\nDo you confirm this order?"
           },
           {
             "type": "cart_summary",
@@ -131,7 +131,7 @@
               ],
               "restaurant_id": "rst_04"
             },
-            "confirm_token": "_0j6l9mcD3ab7J7FW5NKkQ.qm6enK5Rl0L3L0k7cf344sy4ih7II6vS7dK8moCYzLs",
+            "confirm_token": "FE9FAP8R89-c3Zc-gKQbTg.IEzjo4r9rd20bfzGIxPixpJW8uOaQ8KUXRypyPqVXfw",
             "expires_at": "2026-08-20T12:05:00+03:00",
             "assumptions": [
               "Your Burger Stop cart already holds Patates Kızartması ×1, Milkshake ×1; they are included in this order, and the cart is emptied when it is placed."

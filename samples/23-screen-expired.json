@@ -11,7 +11,7 @@
         "blocks": [
           {
             "type": "text",
-            "markdown": "Your Burger Stop cart already holds 1 Patates Kızartması and 1 Milkshake. Those would be included with the 2 cheeseburgers, for a total of 540 TL paid from your wallet. Do you want to confirm that, or order only the 2 cheeseburgers?"
+            "markdown": "Your cart at Burger Stop already has Patates Kızartması ×1 and Milkshake ×1, so they'd be included with the 2 cheeseburgers. The total would be 540 TL, paid from your wallet.\n\nDo you confirm this order? If you want only the 2 cheeseburgers, tell me and I'll set it up that way."
           },
           {
             "type": "cart_summary",
@@ -52,7 +52,7 @@
               ],
               "restaurant_id": "rst_04"
             },
-            "confirm_token": "KRWto28pgFxQu3gaH1cb5A.3UNHrK01ASBitGmnTqeCuHi8CIhe55Pb2QX0N0Cuh-Y",
+            "confirm_token": "_zQDShAnLZDde6SRndOuxA.A-AkRK0tzVYV8bAJ2bflqM0QawtzIh9Q23uB2Qy2hGI",
             "expires_at": "2026-08-20T12:05:00+03:00",
             "assumptions": [
               "Your Burger Stop cart already holds Patates Kızartması ×1, Milkshake ×1; they are included in this order, and the cart is emptied when it is placed."
@@ -65,8 +65,8 @@
           {
             "type": "suggested_actions",
             "chips": [
-              "Confirm order with cart items",
-              "Order only the 2 cheeseburgers",
+              "Confirm order",
+              "Order only the cheeseburgers",
               "Show my cart"
             ]
           }
@@ -84,7 +84,7 @@
       }
     },
     {
-      "user": "/confirm KRWto28pgFxQu3gaH1cb5A.3UNHrK01ASBitGmnTqeCuHi8CIhe55Pb2QX0N0Cuh-Y",
+      "user": "/confirm _zQDShAnLZDde6SRndOuxA.A-AkRK0tzVYV8bAJ2bflqM0QawtzIh9Q23uB2Qy2hGI",
       "response": {
         "version": "1",
         "blocks": [
@@ -127,7 +127,7 @@
               ],
               "restaurant_id": "rst_04"
             },
-            "confirm_token": "-M8XJmj9Mvo1IzME_V2ekA.vQlPjixn6VEy3_vJI5dEfx2pC51tP5aJloOcwPVg6tI",
+            "confirm_token": "aCHz9KVpELrbOjoayWY64w.2OGvYEZnIzTk40Eem1HTMlAMnvyXDAtZ6sdUP5sj8Co",
             "expires_at": "2026-08-20T12:11:00+03:00",
             "assumptions": [
               "Your Burger Stop cart already holds Patates Kızartması ×1, Milkshake ×1; they are included in this order, and the cart is emptied when it is placed."
