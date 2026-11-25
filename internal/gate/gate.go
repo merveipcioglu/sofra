@@ -28,7 +28,7 @@ func (r Requirement) IsGate() bool { return slices.Contains(Gates(), r) }
 
 type Violation struct {
 	Requirement Requirement
-	Detail string
+	Detail      string
 }
 
 type check[S any] func(S) *Violation

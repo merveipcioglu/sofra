@@ -10,8 +10,8 @@ var errInsufficientBalance = errors.New("insufficient wallet balance")
 type UserID string
 
 type User struct {
-	ID          UserID
-	DisplayName string
+	ID            UserID
+	DisplayName   string
 	WalletBalance Money
 	HasSavedCard  bool
 	AgeVerified   bool

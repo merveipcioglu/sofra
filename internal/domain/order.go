@@ -36,8 +36,8 @@ type Order struct {
 	Items          []LineItem
 	Total          Money
 	Status         OrderStatus
-	Note string
-	Paid *Paid
+	Note           string
+	Paid           *Paid
 }
 
 type Paid struct {

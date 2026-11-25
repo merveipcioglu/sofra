@@ -224,6 +224,9 @@
         "restaurant_id": {
           "type": "string"
         },
+        "restaurant_name": {
+          "type": "string"
+        },
         "items": {
           "type": "array",
           "items": {

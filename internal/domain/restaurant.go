@@ -45,7 +45,6 @@ func foldName(s string) string {
 	return turkishLetters.Replace(strings.ToLower(strings.TrimSpace(s)))
 }
 
-
 func (r Restaurant) MenuItem(id ItemID) (MenuItem, bool) {
 	i := slices.IndexFunc(r.Menu, func(m MenuItem) bool { return m.ID == id })
 	if i < 0 {

@@ -26,7 +26,7 @@ func TestLoadRefusesInvalidRecords(t *testing.T) {
 	cases := []struct {
 		name    string
 		files   func(t *testing.T) map[string]string
-		mention []string 
+		mention []string
 	}{
 		{"cart: items but no restaurant", func(*testing.T) map[string]string {
 			return cart(`{"restaurant_id": null, "items": [{"item_id": "itm_014", "qty": 1}]}`)

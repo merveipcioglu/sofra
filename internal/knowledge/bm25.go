@@ -15,7 +15,7 @@ const (
 type analyzer struct {
 	stopwords  bool
 	stem       bool
-	titleBoost int 
+	titleBoost int
 }
 
 var defaultAnalyzer = analyzer{stopwords: true, titleBoost: 1}

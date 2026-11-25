@@ -3,6 +3,7 @@ package action
 import (
 	"slices"
 	"testing"
+	"time"
 
 	"sofra/internal/domain"
 	"sofra/internal/gate"
@@ -38,7 +39,7 @@ func TestRequestedQuantityBelowOneIsRefused(t *testing.T) {
 	for _, qty := range []int{-1, 0} {
 		req := PlaceOrderRequest{UserID: "u_ok", RestaurantID: burgerStop,
 			Items: []domain.LineItem{{ItemID: cheeseburger, Qty: 2}, {ItemID: fries, Qty: qty}}}
-		ev, err := evaluatePlaceOrder(st, req)
+		ev, err := req.evaluate(st, time.Time{})
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -132,7 +133,8 @@ func TestQuantityCap(t *testing.T) {
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
-			ev, err := evaluatePlaceOrder(st, PlaceOrderRequest{UserID: "u_ok", RestaurantID: burgerStop, Items: c.items, CartMode: c.mode})
+			req := PlaceOrderRequest{UserID: "u_ok", RestaurantID: burgerStop, Items: c.items, CartMode: c.mode}
+			ev, err := req.evaluate(st, time.Time{})
 			if err != nil {
 				t.Fatal(err)
 			}

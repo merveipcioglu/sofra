@@ -11,11 +11,12 @@
         "blocks": [
           {
             "type": "text",
-            "markdown": "Your cart has fries and a milkshake from one restaurant. It meets the minimum order. Add 100 TL more to get free delivery."
+            "markdown": "Your cart is from Burger Stop. It meets the minimum order. Add 100 TL more to get free delivery."
           },
           {
             "type": "cart_summary",
             "restaurant_id": "rst_04",
+            "restaurant_name": "Burger Stop",
             "items": [
               {
                 "name": "Patates Kızartması",
@@ -37,8 +38,8 @@
           {
             "type": "suggested_actions",
             "chips": [
-              "Show the menu",
-              "Place the order"
+              "Show Burger Stop menu",
+              "Place this order"
             ]
           }
         ],

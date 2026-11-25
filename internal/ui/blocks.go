@@ -59,6 +59,7 @@ type MenuItem struct {
 type CartSummary struct {
 	Type           string     `json:"type"`
 	RestaurantID   string     `json:"restaurant_id,omitempty"`
+	RestaurantName string     `json:"restaurant_name,omitempty"`
 	Items          []CartLine `json:"items"`
 	SubtotalTRY    float64    `json:"subtotal_try"`
 	DeliveryFeeTRY float64    `json:"delivery_fee_try"`
@@ -70,7 +71,7 @@ type CartSummary struct {
 type CartLine struct {
 	Name     string  `json:"name"`
 	Qty      int     `json:"qty"`
-	PriceTRY float64 `json:"price_try"` 
+	PriceTRY float64 `json:"price_try"`
 }
 
 type OrderSummary struct {

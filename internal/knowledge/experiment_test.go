@@ -31,9 +31,9 @@ func (r variantResult) separable() bool { return r.MinAnswerable > r.MaxUnanswer
 type variant struct {
 	name     string
 	chosen   bool
-	scope    func(Document) bool 
+	scope    func(Document) bool
 	analyzer analyzer
-	weight   func(Document) float64 
+	weight   func(Document) float64
 }
 
 func eligible(d Document) bool { return answerCategory(d.Category) && !isSuperseded(d) }

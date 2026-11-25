@@ -272,7 +272,7 @@ func (sc scenario) run(ctx context.Context, cfg config, traceDir string) (string
 	s := agent.NewSession(sc.user)
 	out := sample{Prompt: sc.prompt, Name: sc.name, UserID: sc.user, Expected: sc.expected}
 	var (
-		last delivered
+		last  delivered
 		shown string
 	)
 	var before observed

@@ -14,7 +14,7 @@ const (
 	TipCap                domain.Money = 500_00
 	TipWindowDays                      = 7
 	TokenTTL                           = 5 * time.Minute
-	MaxItemQty = 50
+	MaxItemQty                         = 50
 )
 
 type claim struct {

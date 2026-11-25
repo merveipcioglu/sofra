@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	maxResults = 5
+	maxResults  = 5
 	MinCoverage = 0.35
 )
 
@@ -22,7 +22,7 @@ type Document struct {
 	Body     string
 	Category string
 	Tags     []string
-	Date     string 
+	Date     string
 }
 
 type Result struct {
@@ -34,7 +34,7 @@ type Result struct {
 type Base struct {
 	docs     map[string]Document
 	index    *index
-	outdated map[string][]Document 
+	outdated map[string][]Document
 }
 
 func Load(path string) (*Base, error) {

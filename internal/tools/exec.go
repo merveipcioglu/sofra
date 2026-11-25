@@ -9,7 +9,6 @@ import (
 	"regexp"
 	"slices"
 	"strings"
-	"time"
 
 	"sofra/internal/action"
 	"sofra/internal/domain"
@@ -89,7 +88,7 @@ func (e *Executor) Run(userID domain.UserID, turn int, name string, input []byte
 }
 
 func errorResult(msg string) Result {
-	return Result{Content: mustJSON(map[string]string{"error": msg}), IsError: true}
+	return Result{Content: mustJSON(errorView{Error: msg}), IsError: true}
 }
 
 func decode(input []byte, v any) error {
@@ -106,17 +105,13 @@ func mustJSON(v any) string {
 	enc := json.NewEncoder(&buf)
 	enc.SetEscapeHTML(false)
 	if err := enc.Encode(v); err != nil {
-		panic(err) 
+		panic(err)
 	}
 	return strings.TrimSuffix(buf.String(), "\n")
 }
 
 func (e *Executor) getUser(c call) (Result, error) {
-	u := c.user
-	return Result{Content: mustJSON(map[string]any{
-		"wallet_balance_try": ui.TL(u.WalletBalance), "payment_method": u.HasSavedCard,
-		"age_verified": u.AgeVerified, "address": u.Address, "district": u.District,
-	})}, nil
+	return Result{Content: mustJSON(newUserView(c.user))}, nil
 }
 
 func (e *Executor) getCart(c call) (Result, error) {
@@ -125,13 +120,13 @@ func (e *Executor) getCart(c call) (Result, error) {
 		return Result{}, err
 	}
 	if cart.IsEmpty() {
-		return Result{Content: mustJSON(map[string]any{"restaurant_id": nil, "items": []any{}})}, nil
+		return Result{Content: mustJSON(emptyCartView{Items: []quoteLineView{}})}, nil
 	}
-	q, err := e.quote(cart.RestaurantID, cart.Items)
+	r, q, err := e.quote(cart.RestaurantID, cart.Items)
 	if err != nil {
 		return Result{}, err
 	}
-	return Result{Content: quoteJSON(cart.RestaurantID, q), Blocks: []ui.Block{ui.NewCartSummary(cart.RestaurantID, q)}}, nil
+	return Result{Content: mustJSON(newQuoteView(r, q)), Blocks: []ui.Block{ui.NewCartSummary(r.ID, r.Name, q)}}, nil
 }
 
 var dishCuisines = map[string]string{"pizza": "Italian"}
@@ -164,20 +159,16 @@ func (e *Executor) searchRestaurants(c call) (Result, error) {
 		return cmp.Or(cmp.Compare(b.Rating, a.Rating), cmp.Compare(a.Name, b.Name))
 	})
 
-	rows := make([]map[string]any, 0, len(found))
+	rows := make([]restaurantView, 0, len(found))
 	blocks := make([]ui.Block, 0, len(found))
 	for _, r := range found {
 		delivers := r.DeliversTo(district)
-		rows = append(rows, map[string]any{
-			"id": r.ID, "name": r.Name, "cuisine": r.Cuisine, "rating": r.Rating, "district": r.District,
-			"delivery_fee_try": ui.TL(r.DeliveryFee), "min_order_try": ui.TL(r.MinOrder), "eta_min": r.ETAMinutes,
-			"delivers_to_district": delivers,
-		})
+		rows = append(rows, newRestaurantView(r, delivers))
 		if delivers {
 			blocks = append(blocks, ui.NewRestaurantCard(r))
 		}
 	}
-	return Result{Content: mustJSON(map[string]any{"district": district, "restaurants": rows}), Blocks: blocks}, nil
+	return Result{Content: mustJSON(restaurantsView{District: district, Restaurants: rows}), Blocks: blocks}, nil
 }
 
 func matchesCuisine(r domain.Restaurant, cuisine *string) bool {
@@ -223,16 +214,13 @@ func (e *Executor) getMenu(c call) (Result, error) {
 	if err != nil {
 		return Result{}, err
 	}
-	rows := make([]map[string]any, 0, len(r.Menu))
+	rows := make([]menuItemView, 0, len(r.Menu))
 	blocks := make([]ui.Block, 0, len(r.Menu))
 	for _, m := range r.Menu {
-		rows = append(rows, map[string]any{
-			"item_id": m.ID, "name": m.Name, "price_try": ui.TL(m.Price), "category": m.Category,
-			"available": m.Available, "age_restricted": m.AgeRestricted,
-		})
+		rows = append(rows, newMenuItemView(m))
 		blocks = append(blocks, ui.NewMenuItem(m))
 	}
-	return Result{Content: mustJSON(map[string]any{"restaurant_id": r.ID, "name": r.Name, "items": rows}), Blocks: blocks}, nil
+	return Result{Content: mustJSON(menuView{RestaurantID: r.ID, Name: r.Name, Items: rows}), Blocks: blocks}, nil
 }
 
 type lineInput struct {
@@ -256,46 +244,31 @@ func (e *Executor) quoteCheckout(c call) (Result, error) {
 	if err := decode(c.input, &in); err != nil {
 		return Result{}, err
 	}
-	id := domain.RestaurantID(in.RestaurantID)
-	q, err := e.quote(id, lineItems(in.Items))
+	r, q, err := e.quote(domain.RestaurantID(in.RestaurantID), lineItems(in.Items))
 	if err != nil {
 		return Result{}, err
 	}
-	return Result{Content: quoteJSON(id, q), Blocks: []ui.Block{ui.NewCartSummary(id, q)}}, nil
+	return Result{Content: mustJSON(newQuoteView(r, q)), Blocks: []ui.Block{ui.NewCartSummary(r.ID, r.Name, q)}}, nil
 }
 
-func (e *Executor) quote(id domain.RestaurantID, items []domain.LineItem) (pricing.Quote, error) {
+func (e *Executor) quote(id domain.RestaurantID, items []domain.LineItem) (domain.Restaurant, pricing.Quote, error) {
 	r, err := e.restaurant(string(id))
 	if err != nil {
-		return pricing.Quote{}, err
+		return domain.Restaurant{}, pricing.Quote{}, err
 	}
 	lines := make([]pricing.Line, 0, len(items))
 	for _, li := range items {
 		m, ok := r.MenuItem(li.ItemID)
 		if !ok {
-			return pricing.Quote{}, fmt.Errorf("%w: item %s is not on the %s menu", errInput, li.ItemID, r.Name)
+			return domain.Restaurant{}, pricing.Quote{}, fmt.Errorf("%w: item %s is not on the %s menu", errInput, li.ItemID, r.Name)
 		}
 		lines = append(lines, pricing.Line{Item: m, Qty: li.Qty})
 	}
 	q, err := pricing.QuoteOrder(r, lines)
 	if err != nil {
-		return pricing.Quote{}, fmt.Errorf("%w: %v", errInput, err)
+		return domain.Restaurant{}, pricing.Quote{}, fmt.Errorf("%w: %v", errInput, err)
 	}
-	return q, nil
-}
-
-func quoteJSON(id domain.RestaurantID, q pricing.Quote) string {
-	lines := make([]map[string]any, 0, len(q.Lines))
-	for _, l := range q.Lines {
-		lines = append(lines, map[string]any{"item_id": l.ItemID, "name": l.Name, "qty": l.Qty, "unit_price_try": ui.TL(l.UnitPrice)})
-	}
-	return mustJSON(map[string]any{
-		"restaurant_id": id, "items": lines,
-		"subtotal_try": ui.TL(q.Subtotal), "delivery_fee_try": ui.TL(q.DeliveryFee), "total_try": ui.TL(q.Total),
-		"min_order_try": ui.TL(q.MinOrder), "meets_minimum": q.MeetsMinimum,
-		"free_delivery_threshold_try": ui.TL(q.FreeDeliveryThreshold),
-		"free_delivery_remaining_try": ui.TL(q.FreeDeliveryShortfall()),
-	})
+	return r, q, nil
 }
 
 func (e *Executor) restaurant(id string) (domain.Restaurant, error) {
@@ -316,15 +289,15 @@ func (e *Executor) listOrders(c call) (Result, error) {
 		notes[string(o.ID)] = o.Note
 	}
 	history := ui.NewOrderHistory(orders)
-	rows := make([]map[string]any, 0, len(history.Orders))
+	rows := make([]orderView, 0, len(history.Orders))
 	for _, h := range history.Orders {
-		row := map[string]any{"order_id": h.OrderID, "date": h.Date, "restaurant": h.Restaurant, "total_try": h.TotalTRY, "status": h.Status}
+		row := orderView{OrderID: h.OrderID, Date: h.Date, Restaurant: h.Restaurant, TotalTRY: h.TotalTRY, Status: h.Status}
 		if note := notes[h.OrderID]; note != "" {
-			row["note"] = framed(note)
+			row.Note = framed(note)
 		}
 		rows = append(rows, row)
 	}
-	return Result{Content: mustJSON(map[string]any{"orders": rows}), Blocks: []ui.Block{history}}, nil
+	return Result{Content: mustJSON(ordersView{Orders: rows}), Blocks: []ui.Block{history}}, nil
 }
 
 func (e *Executor) searchKnowledge(c call) (Result, error) {
@@ -336,30 +309,19 @@ func (e *Executor) searchKnowledge(c call) (Result, error) {
 	}
 	results := e.kb.Search(in.Query)
 	if len(results) == 0 {
-		return Result{Content: mustJSON(map[string]any{
-			"results": []any{}, "note": "No relevant document. Say that the information is not available.",
+		return Result{Content: mustJSON(knowledgeView{
+			Results: []docView{}, Note: "No relevant document. Say that the information is not available.",
 		})}, nil
 	}
-	docs := make([]map[string]any, 0, len(results))
+	docs := make([]docView, 0, len(results))
 	for _, r := range results {
-		doc := docJSON(r.Document, "authoritative")
-		var outdated []map[string]any
+		doc := newDocView(r.Document, "authoritative")
 		for _, o := range r.Outdated {
-			outdated = append(outdated, docJSON(o, "outdated: no longer valid, never answer from it"))
-		}
-		if outdated != nil {
-			doc["outdated_versions"] = outdated
+			doc.OutdatedVersions = append(doc.OutdatedVersions, newDocView(o, "outdated: no longer valid, never answer from it"))
 		}
 		docs = append(docs, doc)
 	}
-	return Result{Content: mustJSON(map[string]any{"results": docs}), Knowledge: results}, nil
-}
-
-func docJSON(d knowledge.Document, status string) map[string]any {
-	return map[string]any{
-		"doc_id": d.ID, "title": d.Title, "category": d.Category, "date": d.Date, "status": status,
-		"content": framed(d.Body),
-	}
+	return Result{Content: mustJSON(knowledgeView{Results: docs}), Knowledge: results}, nil
 }
 
 func framed(text string) string {
@@ -460,7 +422,7 @@ func requestParams(req any) map[string]any {
 	case action.CancelOrderRequest:
 		return map[string]any{"order_id": string(r.OrderID)}
 	case action.AddTipRequest:
-		return map[string]any{"order_id": string(r.OrderID), "amount_try": ui.TL(r.Amount)}
+		return map[string]any{"order_id": string(r.OrderID), "amount_try": r.Amount.TL()}
 	default:
 		return nil
 	}
@@ -470,45 +432,5 @@ func outcomeResult(params map[string]any, o action.Outcome, err error) (Result, 
 	if err != nil {
 		return Result{}, err
 	}
-	view := map[string]any{"status": o.Status}
-	if o.Violation != nil {
-		view["requirement"], view["reason"] = o.Violation.Requirement, o.Violation.Detail
-	}
-	if o.Rejection != "" {
-		view["confirmation_rejected"] = o.Rejection
-		view["note"] = "The confirmation could not be used and nothing was executed. A new confirmation was issued."
-		if o.Status == action.Rejected {
-			view["note"] = "The confirmation could not be used and nothing was executed. No new confirmation was issued."
-		}
-	}
-	if o.Used != "" {
-		view["already_used_for"] = o.Used
-	}
-	if o.Token != nil {
-		view["expires_at"] = o.Token.ExpiresAt.Format(time.RFC3339)
-		view["confirm_with_params"] = params
-	}
-	if o.Quote != nil {
-		view["total_try"] = ui.TL(o.Quote.Total)
-	}
-	if o.Status == action.NeedsConfirmation && o.Action.Spends() {
-		view["payment"] = map[string]any{"from_wallet_try": ui.TL(o.Payment.FromWallet), "from_card_try": ui.TL(o.Payment.FromCard)}
-	}
-	if texts := ui.AssumptionTexts(o); len(texts) > 0 {
-		view["assumptions"] = texts
-	}
-	if r := o.Receipt; r != nil {
-		receipt := map[string]any{"event": r.Event, "order_id": r.OrderID, "status": r.OrderStatus}
-		if r.Event == action.EventTipAdded {
-			receipt["tip_try"] = ui.TL(r.Amount)
-		} else {
-			receipt["total_try"] = ui.TL(r.Amount)
-		}
-		if f := r.Refund; f != nil {
-			receipt["refund"] = map[string]any{"to_wallet_try": ui.TL(f.ToWallet), "to_card_try": ui.TL(f.ToCard),
-				"order_refunded_by_payments_system": f.OrderUnrecorded, "summary": ui.RefundText(*r)}
-		}
-		view["receipt"] = receipt
-	}
-	return Result{Content: mustJSON(view), Outcome: &o, Params: params}, nil
+	return Result{Content: mustJSON(newOutcomeView(o, params)), Outcome: &o, Params: params}, nil
 }

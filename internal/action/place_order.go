@@ -26,15 +26,16 @@ type PlaceOrderRequest struct {
 }
 
 func (s *Service) PreparePlaceOrder(req PlaceOrderRequest) (Outcome, error) {
-	return s.propose(req.UserID, req.Turn, func(r reader) (proposal, error) { return evaluatePlaceOrder(r, req) })
+	return s.propose(req.UserID, req.Turn, req)
 }
 
 func (s *Service) ConfirmPlaceOrderInChat(req PlaceOrderRequest) (Outcome, error) {
-	return s.confirmInChat(req.UserID, domain.PlaceOrder, req.Turn,
-		func(r reader) (proposal, error) { return evaluatePlaceOrder(r, req) })
+	return s.confirmInChat(req.UserID, domain.PlaceOrder, req.Turn, req)
 }
 
-func evaluatePlaceOrder(r reader, req PlaceOrderRequest) (proposal, error) {
+func (req PlaceOrderRequest) usedID(a confirm.Approval) string { return a.DerivedID(orderPrefix) }
+
+func (req PlaceOrderRequest) evaluate(r reader, _ time.Time) (proposal, error) {
 	if err := validateRequested(req.Items); err != nil {
 		return invalidRequest(err.Error()), nil
 	}
@@ -79,9 +80,9 @@ func evaluatePlaceOrder(r reader, req PlaceOrderRequest) (proposal, error) {
 				Subtotal: quote.Subtotal, DeliveryFee: quote.DeliveryFee, Total: quote.Total,
 				ClearsCart: b.includesCart, Paid: plan.Paid(),
 			}),
-			Snapshot: PlaceOrderRequest{UserID: req.UserID, RestaurantID: req.RestaurantID,
-				Items: slices.Clone(req.Items), CartMode: req.CartMode},
 		},
+		request: PlaceOrderRequest{UserID: req.UserID, RestaurantID: req.RestaurantID,
+			Items: slices.Clone(req.Items), CartMode: req.CartMode},
 		apply: func(tx *store.Tx, a confirm.Approval, now time.Time) (*Receipt, error) {
 			order := domain.Order{
 				ID:             domain.OrderID(a.DerivedID(orderPrefix)),

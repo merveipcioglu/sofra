@@ -35,6 +35,8 @@ func (m Money) Times(n int) (Money, error) {
 	return p, nil
 }
 
+func (m Money) TL() float64 { return float64(m) / 100 }
+
 func (m Money) String() string {
 	sign, kurus := "", int64(m)
 	if kurus < 0 {

@@ -3,7 +3,7 @@
 //	          → gates → same cost as approved → execute → use up
 //	          approval → commit
 //
-// Approval comes from chat  or the confirmation screen.
+// Approval comes from chat or the confirmation screen.
 package action
 
 import (
@@ -95,13 +95,25 @@ type proposal struct {
 	stop     *Outcome
 	outcome  Outcome
 	approved confirm.Approved
+	request  request
 	apply    func(tx *store.Tx, a confirm.Approval, now time.Time) (*Receipt, error)
 }
 
-type evaluator func(r reader) (proposal, error)
+type request interface {
+	evaluate(r reader, now time.Time) (proposal, error)
+	usedID(a confirm.Approval) string
+}
 
-func (s *Service) propose(userID domain.UserID, turn int, eval evaluator) (Outcome, error) {
-	p, err := eval(s.store)
+func requestOf(a confirm.Approval) (request, error) {
+	req, ok := a.Snapshot().(request)
+	if !ok {
+		return nil, fmt.Errorf("approval holds %T, not a request", a.Snapshot())
+	}
+	return req, nil
+}
+
+func (s *Service) propose(userID domain.UserID, turn int, req request) (Outcome, error) {
+	p, err := req.evaluate(s.store, s.clock.Now())
 	if err != nil || p.stop != nil {
 		return deref(p.stop), err
 	}
@@ -109,19 +121,21 @@ func (s *Service) propose(userID domain.UserID, turn int, eval evaluator) (Outco
 }
 
 func (s *Service) issue(p proposal, userID domain.UserID, turn int, rejection confirm.Reason) (Outcome, error) {
-	tok, err := s.tokens.Issue(userID, p.approved, policy.TokenTTL, turn)
+	approved := p.approved
+	approved.Snapshot = p.request
+	tok, err := s.tokens.Issue(userID, approved, policy.TokenTTL, turn)
 	if err != nil {
 		return Outcome{}, err
 	}
 	out := p.outcome
-	out.Status, out.Token, out.Rejection, out.Request = NeedsConfirmation, &tok, rejection, p.approved.Snapshot
+	out.Status, out.Token, out.Rejection, out.Request = NeedsConfirmation, &tok, rejection, p.request
 	return out, nil
 }
 
-func (s *Service) confirmInChat(userID domain.UserID, action domain.Action, turn int, asked evaluator) (Outcome, error) {
+func (s *Service) confirmInChat(userID domain.UserID, action domain.Action, turn int, asked request) (Outcome, error) {
 	return s.transact(func(tx *store.Tx) (Outcome, confirm.Approval, error) {
 		var none confirm.Approval
-		p, err := asked(tx)
+		p, err := asked.evaluate(tx, s.clock.Now())
 		if err != nil || p.stop != nil {
 			return deref(p.stop), none, err
 		}
@@ -155,11 +169,11 @@ func (s *Service) ConfirmOnScreen(userID domain.UserID, token string, turn int) 
 		if reason != confirm.Expired {
 			return rejected(approval, reason), none, nil
 		}
-		eval, err := s.evaluator(approval.Snapshot())
+		req, err := requestOf(approval)
 		if err != nil {
 			return Outcome{}, none, err
 		}
-		p, err := eval(tx)
+		p, err := req.evaluate(tx, s.clock.Now())
 		if err != nil || p.stop != nil {
 			return deref(p.stop), none, err
 		}
@@ -170,11 +184,11 @@ func (s *Service) ConfirmOnScreen(userID domain.UserID, token string, turn int) 
 
 func (s *Service) commit(tx *store.Tx, approval confirm.Approval, userID domain.UserID, turn int) (Outcome, confirm.Approval, error) {
 	var none confirm.Approval
-	eval, err := s.evaluator(approval.Snapshot())
+	req, err := requestOf(approval)
 	if err != nil {
 		return Outcome{}, none, err
 	}
-	p, err := eval(tx)
+	p, err := req.evaluate(tx, s.clock.Now())
 	if err != nil || p.stop != nil {
 		return deref(p.stop), none, err
 	}
@@ -191,30 +205,10 @@ func (s *Service) commit(tx *store.Tx, approval confirm.Approval, userID domain.
 	return out, approval, nil
 }
 
-func (s *Service) evaluator(snapshot any) (evaluator, error) {
-	switch req := snapshot.(type) {
-	case PlaceOrderRequest:
-		return func(r reader) (proposal, error) { return evaluatePlaceOrder(r, req) }, nil
-	case CancelOrderRequest:
-		return func(r reader) (proposal, error) { return evaluateCancelOrder(r, req) }, nil
-	case AddTipRequest:
-		return func(r reader) (proposal, error) { return evaluateAddTip(r, req, s.clock.Now()) }, nil
-	default:
-		return nil, fmt.Errorf("approval holds %T, not a request", snapshot)
-	}
-}
-
 func rejected(a confirm.Approval, reason confirm.Reason) Outcome {
 	out := Outcome{Action: a.Action(), Status: Rejected, Rejection: reason}
-	if reason == confirm.AlreadyUsed {
-		switch req := a.Snapshot().(type) {
-		case PlaceOrderRequest:
-			out.Used = a.DerivedID(orderPrefix)
-		case AddTipRequest:
-			out.Used = a.DerivedID(tipPrefix)
-		case CancelOrderRequest:
-			out.Used = string(req.OrderID)
-		}
+	if req, ok := a.Snapshot().(request); ok && reason == confirm.AlreadyUsed {
+		out.Used = req.usedID(a)
 	}
 	return out
 }
@@ -232,6 +226,7 @@ func (s *Service) transact(fn func(*store.Tx) (Outcome, confirm.Approval, error)
 		if out.Status != Executed {
 			return errNoCommit
 		}
+
 		return s.tokens.Consume(approval)
 	})
 	if errors.Is(err, errNoCommit) {

@@ -11,10 +11,11 @@
         "blocks": [
           {
             "type": "text",
-            "markdown": "Your Burger Stop cart already has Patates Kızartması ×1 and Milkshake ×1. As it stands, they'd be included with the 2 cheeseburgers, for a total of 540 TL paid from your wallet.\n\nDo you want to confirm that, or order only the 2 cheeseburgers?"
+            "markdown": "Your cart at Burger Stop already holds 1 Patates Kızartması and 1 Milkshake. Unless you say otherwise, they'll be included with the 2 cheeseburgers. The total is 540 TL, paid from your wallet. Confirm to place it, or tell me to order only the 2 cheeseburgers."
           },
           {
             "type": "cart_summary",
+            "restaurant_name": "Burger Stop",
             "items": [
               {
                 "name": "Patates Kızartması",
@@ -51,7 +52,7 @@
               ],
               "restaurant_id": "rst_04"
             },
-            "confirm_token": "DqdzGFTXXGjP5TTBqWGm0A.qqRmCkEVAZQ-5WIDA0BcE2LdOhFXUFiBOclDiEzKqqI",
+            "confirm_token": "WvqXdqwetddh9BmbrQeVwA.aLroSFyI641CejYPXFkcGYVwkEBSyQUBe_6wrpDBcuU",
             "expires_at": "2026-08-20T12:05:00+03:00",
             "assumptions": [
               "Your Burger Stop cart already holds Patates Kızartması ×1, Milkshake ×1; they are included in this order, and the cart is emptied when it is placed."
@@ -64,8 +65,8 @@
           {
             "type": "suggested_actions",
             "chips": [
-              "Confirm order with cart items",
-              "Order only the 2 cheeseburgers",
+              "Confirm order",
+              "Order only the cheeseburgers",
               "Show my cart"
             ]
           }
@@ -83,13 +84,13 @@
       }
     },
     {
-      "user": "/confirm DqdzGFTXXGjP5TTBqWGm0A.qqRmCkEVAZQ-5WIDA0BcE2LdOhFXUFiBOclDiEzKqqI",
+      "user": "/confirm WvqXdqwetddh9BmbrQeVwA.aLroSFyI641CejYPXFkcGYVwkEBSyQUBe_6wrpDBcuU",
       "response": {
         "version": "1",
         "blocks": [
           {
             "type": "order_summary",
-            "order_id": "ord_0ea7731854d75c68cfe534c1a961a6d0",
+            "order_id": "ord_5afa9776ac1eb5d761f4199bad0795c0",
             "restaurant": "Burger Stop",
             "total_try": 540,
             "status": "received",
@@ -107,14 +108,14 @@
       }
     },
     {
-      "user": "/confirm DqdzGFTXXGjP5TTBqWGm0A.qqRmCkEVAZQ-5WIDA0BcE2LdOhFXUFiBOclDiEzKqqI",
+      "user": "/confirm WvqXdqwetddh9BmbrQeVwA.aLroSFyI641CejYPXFkcGYVwkEBSyQUBe_6wrpDBcuU",
       "response": {
         "version": "1",
         "blocks": [
           {
             "type": "error",
             "code": "already_used",
-            "message": "This confirmation was already used (ord_0ea7731854d75c68cfe534c1a961a6d0); nothing more was done."
+            "message": "This confirmation was already used (ord_5afa9776ac1eb5d761f4199bad0795c0); nothing more was done."
           }
         ],
         "audit": {

@@ -56,7 +56,7 @@ func TestEveryBlockRendersValid(t *testing.T) {
 		NewRestaurantCard(domain.Restaurant{ID: "rst_04", Name: "Burger Stop", Cuisine: "Burger", Rating: 4.1,
 			DeliveryFee: tl(30), MinOrder: tl(100), ETAMinutes: 30, District: "Kadıköy"}),
 		NewMenuItem(domain.MenuItem{ID: "itm_013", Name: "Cheeseburger", Price: tl(195), Category: "main", Available: true}),
-		NewCartSummary("rst_04", quote),
+		NewCartSummary("rst_04", "Burger Stop", quote),
 		NewOrderHistory([]domain.Order{order}),
 		NewCitation(knowledge.Document{ID: "pol_tip", Title: "Tips", Category: "policy", Date: "2026-05-05"}),
 		NewSuggestedActions("Show my cart"),

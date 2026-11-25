@@ -17,7 +17,7 @@ var (
 
 type Store struct {
 	restaurants   map[domain.RestaurantID]domain.Restaurant
-	restaurantIDs []domain.RestaurantID 
+	restaurantIDs []domain.RestaurantID
 
 	mu    sync.RWMutex
 	state state

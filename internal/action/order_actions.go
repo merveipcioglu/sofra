@@ -17,13 +17,14 @@ type CancelOrderRequest struct {
 }
 
 func (s *Service) PrepareCancelOrder(req CancelOrderRequest) (Outcome, error) {
-	return s.propose(req.UserID, req.Turn, func(r reader) (proposal, error) { return evaluateCancelOrder(r, req) })
+	return s.propose(req.UserID, req.Turn, req)
 }
 
 func (s *Service) ConfirmCancelOrderInChat(req CancelOrderRequest) (Outcome, error) {
-	return s.confirmInChat(req.UserID, domain.CancelOrder, req.Turn,
-		func(r reader) (proposal, error) { return evaluateCancelOrder(r, req) })
+	return s.confirmInChat(req.UserID, domain.CancelOrder, req.Turn, req)
 }
+
+func (req CancelOrderRequest) usedID(confirm.Approval) string { return string(req.OrderID) }
 
 func refundFor(o domain.Order, tips []domain.Tip) Refund {
 	var r Refund
@@ -41,7 +42,7 @@ func refundFor(o domain.Order, tips []domain.Tip) Refund {
 	return r
 }
 
-func evaluateCancelOrder(r reader, req CancelOrderRequest) (proposal, error) {
+func (req CancelOrderRequest) evaluate(r reader, _ time.Time) (proposal, error) {
 	order, err := findOrder(r, req.UserID, req.OrderID)
 	if err != nil {
 		return proposal{}, err
@@ -51,9 +52,9 @@ func evaluateCancelOrder(r reader, req CancelOrderRequest) (proposal, error) {
 	}
 	params := confirm.CancelOrderParams(req.OrderID)
 	return proposal{
-		outcome: Outcome{Action: domain.CancelOrder, Restaurant: order.RestaurantName},
-		approved: confirm.Approved{Request: params, Resolved: params,
-			Snapshot: CancelOrderRequest{UserID: req.UserID, OrderID: req.OrderID}},
+		outcome:  Outcome{Action: domain.CancelOrder, Restaurant: order.RestaurantName},
+		approved: confirm.Approved{Request: params, Resolved: params},
+		request:  CancelOrderRequest{UserID: req.UserID, OrderID: req.OrderID},
 		apply: func(tx *store.Tx, _ confirm.Approval, _ time.Time) (*Receipt, error) {
 			cancelled := *order
 			if err := cancelled.Cancel(); err != nil {
@@ -90,15 +91,16 @@ type AddTipRequest struct {
 }
 
 func (s *Service) PrepareAddTip(req AddTipRequest) (Outcome, error) {
-	return s.propose(req.UserID, req.Turn, func(r reader) (proposal, error) { return evaluateAddTip(r, req, s.clock.Now()) })
+	return s.propose(req.UserID, req.Turn, req)
 }
 
 func (s *Service) ConfirmAddTipInChat(req AddTipRequest) (Outcome, error) {
-	return s.confirmInChat(req.UserID, domain.AddTip, req.Turn,
-		func(r reader) (proposal, error) { return evaluateAddTip(r, req, s.clock.Now()) })
+	return s.confirmInChat(req.UserID, domain.AddTip, req.Turn, req)
 }
 
-func evaluateAddTip(r reader, req AddTipRequest, now time.Time) (proposal, error) {
+func (req AddTipRequest) usedID(a confirm.Approval) string { return a.DerivedID(tipPrefix) }
+
+func (req AddTipRequest) evaluate(r reader, now time.Time) (proposal, error) {
 	user, err := r.User(req.UserID)
 	if err != nil {
 		return proposal{}, err
@@ -123,8 +125,8 @@ func evaluateAddTip(r reader, req AddTipRequest, now time.Time) (proposal, error
 		approved: confirm.Approved{
 			Request:  confirm.AddTipRequest(req.OrderID, req.Amount),
 			Resolved: confirm.AddTipResolved(req.OrderID, req.Amount, plan.Paid()),
-			Snapshot: AddTipRequest{UserID: req.UserID, OrderID: req.OrderID, Amount: req.Amount},
 		},
+		request: AddTipRequest{UserID: req.UserID, OrderID: req.OrderID, Amount: req.Amount},
 		apply: func(tx *store.Tx, a confirm.Approval, now time.Time) (*Receipt, error) {
 			if err := user.DebitWallet(plan.FromWallet); err != nil {
 				return nil, err

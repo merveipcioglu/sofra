@@ -11,10 +11,11 @@
         "blocks": [
           {
             "type": "text",
-            "markdown": "Your Burger Stop cart already has Patates Kızartması ×1 and Milkshake ×1. They would be included with the 2 cheeseburgers, for a total of 540 TL paid from your wallet. Reply \"confirm\" to order everything. If you want only the 2 cheeseburgers, tell me and I'll order just those."
+            "markdown": "Your cart at Burger Stop already has Patates Kızartması ×1 and Milkshake ×1. I've included them with the 2 cheeseburgers, so the total is 540 TL, paid from your wallet. Please confirm below. If you want only the 2 cheeseburgers, tell me and I'll change the order."
           },
           {
             "type": "cart_summary",
+            "restaurant_name": "Burger Stop",
             "items": [
               {
                 "name": "Patates Kızartması",
@@ -51,7 +52,7 @@
               ],
               "restaurant_id": "rst_04"
             },
-            "confirm_token": "Dv5LRIB3wDTwUTtBRGkp6g._ehbbKUb1FiMyOsFPDpP9thL_uDMltYrbZ3fddDwYsU",
+            "confirm_token": "Ut7b6w0PlwUJAAVJORy9ug.efBm1zoN1bF55UKoDuQOJ7ai5Mw42zosJFnJm8viJQc",
             "expires_at": "2026-08-20T12:05:00+03:00",
             "assumptions": [
               "Your Burger Stop cart already holds Patates Kızartması ×1, Milkshake ×1; they are included in this order, and the cart is emptied when it is placed."

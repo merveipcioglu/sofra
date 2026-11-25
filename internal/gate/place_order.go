@@ -27,7 +27,6 @@ func EvaluatePlaceOrder(req PlaceOrderRequest) PlaceOrderResult {
 	return PlaceOrderResult{Quote: st.quote, Payment: st.payment}
 }
 
-
 var placeOrderChecks = []check[*orderState]{
 	deliversToUser,
 	hasItems,

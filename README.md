@@ -25,6 +25,9 @@ the **alternatives** considered, and how it would be done in **production**.
 
 **Requirements:** Go 1.25 or later and a Claude API key.
 
+Run every command from the project root. `data/`, `schema/` and `samples/`
+are read and written relative to the working directory.
+
 ```bash
 cp .env.example .env              # fill in the ANTHROPIC_API_KEY=... line
 go run ./cmd/sofra scenarios      # one command: runs the 23 scenarios, writes to samples/
@@ -448,6 +451,14 @@ concurrent confirmations cannot consume the same record. The signing key is
 kept in a KMS and rotated. The idempotency key is also passed to the payment
 provider.
 
+**Known limitation:** Nothing ever gets removed from the in-memory map.
+Once an approval is used, replaced or expired, it just sits there until
+the process restarts. `Issue` also loops over every record to find the
+user's pending approval and replace it, so it's O(n). For a case study
+this size, that doesn't matter. In production I'd use a table with a TTL:
+the store would clean up expired records by itself, and finding the
+pending approval would be a simple lookup by (user, action).
+
 ---
 
 ## 8. Sensitive actions: order, cancel, tip
@@ -589,10 +600,16 @@ those tagged `archive`, or those with `(legacy)` / `(archive)` in the title.
 | `howto_1_v0` | `howto_1` | 45 vs 20 minutes for reporting a delay |
 | `howto_9_v0` | `howto_9` | Refund to card in 3–5 days vs instant refund to wallet |
 
-Outdated documents are not indexed and cannot back an answer. They are shown
-to the model only together with their current versions and with an
-"outdated" label, so the answer can say "the old threshold was 150 TL, it no
-longer applies" (scenario 10).
+Outdated documents aren't indexed, so no answer can rely on them. The model
+only sees them next to the current version, marked as "outdated", so it
+knows which rule changed. The prompt says: don't repeat old figures or
+rules unless the user asks about the old rule.
+
+There's a catch, though. Say the model answers "the old free delivery over
+150 TL rule doesn't apply anymore." That's a correct answer, but it
+contains the exact phrase ev_05's `must_not_match` is looking for, and a
+string match can't tell whether the model is quoting the rule or claiming
+it. This actually happened in one run of scenario 8.
 
 **Why announcements are never a basis:** Only 2 of the 110 announcements
 relate to a policy, and both repeat a policy document. The rest are
@@ -830,6 +847,7 @@ The starting schema is kept unchanged in
 | `order_summary.event` (required) | A single receipt block for three actions; distinguishes `placed` / `cancelled` / `tip_added`. |
 | `order_summary.tip_try` | A tip is not an order total; it has its own field next to `total_try`. For orders and cancellations, the starting schema's `total_try` is used. |
 | `order_summary.refund` `{to_wallet_try, to_card_try, order_by_payments_system?}` | The cancellation's refund, with figures filled by code. Not a separate block; a refund is only part of a cancellation receipt. |
+| `cart_summary.restaurant_name` (optional) | The starting schema has only `restaurant_id`, an internal id. Without the name, the card cannot say which restaurant the cart is from, and the model, which saw only the id in `get_cart`, wrote "from restaurant rst_04" in one run. `get_cart` and `quote_checkout` return the name too. |
 
 
 
@@ -931,6 +949,14 @@ assumptions made where the data or the case text does not say explicitly.
   could be produced. *In production* the real risk limit would be on the
   amount, not the quantity: a per-order or per-day total owned by the fraud
   and payments side.
+- **"Pizza" maps to Italian.** None of the restaurants has `pizza` as a
+  cuisine, and no menu item has "pizza" in its name. Pizza Locale only
+  shows up because of its name, and Napoli Fırın only because it's
+  Italian. To handle this, `search_restaurants` has a small lookup table
+  with one entry (`dishCuisines` in `internal/tools/exec.go`) that says
+  pizza → Italian. It's only there for test prompt 2. In a real system,
+  this mapping would come from the catalog's menu categories or tags,
+  not from code.
 - **"My last order"** is found by date; `orders.json` is not in date order.
 - **Free delivery includes 250 TL** ("250 TL and above").
 - **The tip window is in calendar days;** the cap is a per-order total

@@ -13,7 +13,7 @@ var restaurant = domain.Restaurant{
 		{ID: "burger", Name: "Burger", Price: tl(150), Available: true},
 		{ID: "soup", Name: "Soup", Price: tl(50), Available: true},
 		{ID: "energy", Name: "Energy drink", Price: tl(40), Available: true, AgeRestricted: true},
-		{ID: "kebab", Name: "Kebab", Price: tl(200)}, 
+		{ID: "kebab", Name: "Kebab", Price: tl(200)},
 	},
 }
 

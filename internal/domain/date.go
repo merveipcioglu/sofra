@@ -10,7 +10,6 @@ func ParseDate(s string) (time.Time, error) {
 	return time.ParseInLocation(dateLayout, s, Istanbul)
 }
 
-
 func FormatDate(t time.Time) string {
 	return t.In(Istanbul).Format(dateLayout)
 }

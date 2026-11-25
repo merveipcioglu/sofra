@@ -57,7 +57,7 @@ type Token struct {
 }
 
 type Approved struct {
-	Request Params
+	Request  Params
 	Resolved Params
 	Snapshot any
 }
@@ -103,14 +103,13 @@ type userAction struct {
 	action domain.Action
 }
 
-
 type Service struct {
 	secret []byte
 	clock  clock.Clock
 
 	mu      sync.Mutex
 	records map[[nonceSize]byte]*record
-	latest map[userAction]string
+	latest  map[userAction]string
 }
 
 func NewService(secret []byte, clk clock.Clock) (*Service, error) {
@@ -203,7 +202,7 @@ func (s *Service) verify(userID domain.UserID, token string, turn int) (Approval
 		return rec.approval, &RejectedError{Expired}
 	}
 	if turn <= rec.issuedTurn {
-		
+
 		return rec.approval, &RejectedError{SameTurn}
 	}
 	return rec.approval, nil
@@ -225,10 +224,9 @@ func (s *Service) Consume(a Approval) error {
 	return nil
 }
 
-
 func (s *Service) sign(rec *record) []byte {
 	a := rec.approval
-	payload, _ := json.Marshal(struct { 
+	payload, _ := json.Marshal(struct {
 		UserID       domain.UserID `json:"user_id"`
 		Action       domain.Action `json:"action"`
 		RequestHash  string        `json:"request_hash"`

@@ -14,9 +14,7 @@ import (
 	"sofra/internal/pricing"
 )
 
-func TL(m domain.Money) float64 { return float64(m) / 100 }
-
-func tlPtr(m domain.Money) *float64 { v := TL(m); return &v }
+func tlPtr(m domain.Money) *float64 { v := m.TL(); return &v }
 
 func NewText(markdown string) Text { return Text{Type: "text", Markdown: markdown} }
 
@@ -27,27 +25,27 @@ func NewSuggestedActions(chips ...string) SuggestedActions {
 func NewRestaurantCard(r domain.Restaurant) RestaurantCard {
 	return RestaurantCard{
 		Type: "restaurant_card", RestaurantID: string(r.ID), Name: r.Name, Cuisine: r.Cuisine,
-		Rating: r.Rating, DeliveryFeeTRY: TL(r.DeliveryFee), MinOrderTRY: TL(r.MinOrder),
+		Rating: r.Rating, DeliveryFeeTRY: r.DeliveryFee.TL(), MinOrderTRY: r.MinOrder.TL(),
 		ETAMin: r.ETAMinutes, District: r.District,
 	}
 }
 
 func NewMenuItem(m domain.MenuItem) MenuItem {
 	return MenuItem{
-		Type: "menu_item", ItemID: string(m.ID), Name: m.Name, PriceTRY: TL(m.Price),
+		Type: "menu_item", ItemID: string(m.ID), Name: m.Name, PriceTRY: m.Price.TL(),
 		Available: m.Available, AgeRestricted: m.AgeRestricted, Category: m.Category,
 	}
 }
 
-func NewCartSummary(restaurantID domain.RestaurantID, q pricing.Quote) CartSummary {
+func NewCartSummary(restaurantID domain.RestaurantID, restaurantName string, q pricing.Quote) CartSummary {
 	lines := make([]CartLine, 0, len(q.Lines))
 	for _, l := range q.Lines {
-		lines = append(lines, CartLine{Name: l.Name, Qty: l.Qty, PriceTRY: TL(l.UnitPrice)})
+		lines = append(lines, CartLine{Name: l.Name, Qty: l.Qty, PriceTRY: l.UnitPrice.TL()})
 	}
 	return CartSummary{
-		Type: "cart_summary", RestaurantID: string(restaurantID), Items: lines,
-		SubtotalTRY: TL(q.Subtotal), DeliveryFeeTRY: TL(q.DeliveryFee), TotalTRY: TL(q.Total),
-		MinOrderTRY: TL(q.MinOrder), MeetsMinimum: q.MeetsMinimum,
+		Type: "cart_summary", RestaurantID: string(restaurantID), RestaurantName: restaurantName, Items: lines,
+		SubtotalTRY: q.Subtotal.TL(), DeliveryFeeTRY: q.DeliveryFee.TL(), TotalTRY: q.Total.TL(),
+		MinOrderTRY: q.MinOrder.TL(), MeetsMinimum: q.MeetsMinimum,
 	}
 }
 
@@ -60,7 +58,7 @@ func NewOrderHistory(orders []domain.Order) OrderHistory {
 	for _, o := range sorted {
 		entries = append(entries, HistoryEntry{
 			OrderID: string(o.ID), Date: domain.FormatDate(o.Date), Restaurant: o.RestaurantName,
-			TotalTRY: TL(o.Total), Status: string(o.Status),
+			TotalTRY: o.Total.TL(), Status: string(o.Status),
 		})
 	}
 	return OrderHistory{Type: "order_history", Orders: entries}
@@ -96,7 +94,7 @@ func FromOutcome(o action.Outcome, params map[string]any) ([]Block, Audit) {
 		audit.Decision = NeedsConfirmation
 		var blocks []Block
 		if o.Quote != nil && o.Action == domain.PlaceOrder {
-			blocks = append(blocks, NewCartSummary("", *o.Quote))
+			blocks = append(blocks, NewCartSummary("", o.Restaurant, *o.Quote))
 		}
 		return append(blocks, newConfirmationPrompt(o, params)), audit
 	case action.Executed:
@@ -139,7 +137,7 @@ func newConfirmationPrompt(o action.Outcome, params map[string]any) Confirmation
 		ConfirmToken: o.Token.Value, ExpiresAt: o.Token.ExpiresAt.Format(time.RFC3339), Assumptions: AssumptionTexts(o),
 	}
 	if o.Action.Spends() {
-		p.Payment = &Payment{FromWalletTRY: TL(o.Payment.FromWallet), FromCardTRY: TL(o.Payment.FromCard)}
+		p.Payment = &Payment{FromWalletTRY: o.Payment.FromWallet.TL(), FromCardTRY: o.Payment.FromCard.TL()}
 	}
 	return p
 }
@@ -200,5 +198,5 @@ func newRefund(r *action.Refund) *Refund {
 	if r == nil {
 		return nil
 	}
-	return &Refund{ToWalletTRY: TL(r.ToWallet), ToCardTRY: TL(r.ToCard), OrderByPaymentsSystem: r.OrderUnrecorded}
+	return &Refund{ToWalletTRY: r.ToWallet.TL(), ToCardTRY: r.ToCard.TL(), OrderByPaymentsSystem: r.OrderUnrecorded}
 }
