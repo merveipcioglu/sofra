@@ -11,7 +11,7 @@
         "blocks": [
           {
             "type": "text",
-            "markdown": "I couldn't add the tip. Order u_ok_o1 was delivered on 2026-07-10, and tips can only be left within 7 days after delivery. That window has passed."
+            "markdown": "I couldn't add the tip. Order u_ok_o1 was delivered on 2026-07-10, and tips can only be left within 7 days after delivery. That window has closed."
           },
           {
             "type": "verification_gate",
@@ -23,7 +23,7 @@
             "type": "suggested_actions",
             "chips": [
               "Show my orders",
-              "Ask how tips work"
+              "Ask about tip rules"
             ]
           }
         ],
@@ -31,8 +31,7 @@
           "user_id": "u_ok",
           "intent": "add_tip",
           "tools_called": [
-            "add_tip",
-            "search_knowledge"
+            "add_tip"
           ],
           "decision": "blocked"
         }

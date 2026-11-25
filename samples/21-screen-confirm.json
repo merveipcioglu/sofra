@@ -11,7 +11,7 @@
         "blocks": [
           {
             "type": "text",
-            "markdown": "Your cart at Burger Stop already has Patates Kızartması ×1 and Milkshake ×1. They would be included with the 2 cheeseburgers, so the total is 540 TL, paid from your wallet. Please confirm to place it. If you want only the 2 cheeseburgers, tell me and I'll change the order."
+            "markdown": "Your Burger Stop cart already has Patates Kızartması ×1 and Milkshake ×1. They are included in this order with the 2 cheeseburgers. The total is 540 TL, paid from your wallet.\n\nDo you want to confirm this order? If you only want the 2 cheeseburgers, tell me and I'll change it."
           },
           {
             "type": "cart_summary",
@@ -52,7 +52,7 @@
               ],
               "restaurant_id": "rst_04"
             },
-            "confirm_token": "GGa_QfrlkwsK4IKFh2Ge2w.ilRJeBQGOlXRDHc7AeWW6botcWkl-acajcoe4PBAXxY",
+            "confirm_token": "EDGHO32cTqRJUDjHNol5kg.f2DdyhG9yw1u4IHqnEFWx9KA7zWdnbg6pnP3JypVXak",
             "expires_at": "2026-08-20T12:05:00+03:00",
             "assumptions": [
               "Your Burger Stop cart already holds Patates Kızartması ×1, Milkshake ×1; they are included in this order, and the cart is emptied when it is placed."
@@ -67,7 +67,7 @@
             "chips": [
               "Confirm order",
               "Order only the cheeseburgers",
-              "Show my cart"
+              "Show cart"
             ]
           }
         ],
@@ -84,13 +84,13 @@
       }
     },
     {
-      "user": "/confirm GGa_QfrlkwsK4IKFh2Ge2w.ilRJeBQGOlXRDHc7AeWW6botcWkl-acajcoe4PBAXxY",
+      "user": "/confirm EDGHO32cTqRJUDjHNol5kg.f2DdyhG9yw1u4IHqnEFWx9KA7zWdnbg6pnP3JypVXak",
       "response": {
         "version": "1",
         "blocks": [
           {
             "type": "order_summary",
-            "order_id": "ord_1866bf41fae5930b0ae0828587619edb",
+            "order_id": "ord_1031873b7d9c4ea4495038c736897992",
             "restaurant": "Burger Stop",
             "total_try": 540,
             "status": "received",

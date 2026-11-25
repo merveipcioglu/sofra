@@ -11,7 +11,7 @@
         "blocks": [
           {
             "type": "text",
-            "markdown": "Sorry, Ege Balık doesn't deliver to your district (Üsküdar), so I can't place this order. I can look for other seafood restaurants that deliver to you."
+            "markdown": "Sorry, Ege Balık doesn't deliver to your district, Üsküdar, so I can't order from it. I can look for other seafood restaurants that deliver to you."
           },
           {
             "type": "verification_gate",

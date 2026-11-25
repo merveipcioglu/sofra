@@ -11,7 +11,7 @@
         "blocks": [
           {
             "type": "text",
-            "markdown": "I can't cancel order u_ok_o1 because it has already been delivered. An order can only be cancelled before the restaurant starts preparing it."
+            "markdown": "I can't cancel order u_ok_o1 because it has already been delivered. An order can be cancelled only before the restaurant starts preparing it."
           },
           {
             "type": "verification_gate",
@@ -22,9 +22,7 @@
           {
             "type": "suggested_actions",
             "chips": [
-              "Show my orders",
-              "Tip the courier",
-              "How do refunds work?"
+              "Show my orders"
             ]
           }
         ],

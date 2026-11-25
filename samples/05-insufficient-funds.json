@@ -11,7 +11,7 @@
         "blocks": [
           {
             "type": "text",
-            "markdown": "I couldn't place the order. Your wallet balance is 30.00 TL, the Levrek Izgara costs 320.00 TL, and you have no saved card. You're 290.00 TL short. Add funds or save a card, then ask me again."
+            "markdown": "I couldn't place the Levrek Izgara order from Ege Balık. Your wallet balance doesn't cover it, and you have no saved card. You're 290.00 TL short. You'd need to top up your wallet or save a card first."
           },
           {
             "type": "verification_gate",

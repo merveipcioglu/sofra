@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"maps"
+	"regexp"
 	"slices"
 	"strings"
 
@@ -103,6 +104,9 @@ type call struct {
 }
 
 func (a *Agent) Handle(ctx context.Context, s *Session, userText string) (ui.Response, error) {
+	if token, ok := typedToken(userText); ok {
+		return a.confirm(s, token, typedNote, "confirm_typed_token")
+	}
 	s.turn++
 	s.addUser(anthropic.NewBetaTextBlock(userText))
 	st := &turnState{reads: map[string]string{}}
@@ -142,9 +146,27 @@ func (a *Agent) Handle(ctx context.Context, s *Session, userText string) (ui.Res
 	return systemReply(s, st, "step_limit", "This took too many steps; nothing more was done.", "tool step limit reached"), nil
 }
 
-const screenNote = "[screen]"
+const (
+	screenNote  = "[screen]"
+	pressedNote = screenNote + " The user acted on the confirmation screen, without you. Result: "
+	typedNote   = screenNote + " The user typed a confirm_token in the chat; the system checked it without you. Result: "
+)
+
+var typedTokenPattern = regexp.MustCompile(`(?i)confirm_token\s*[=:]\s*["'` + "`" + `]?([^\s"'` + "`" + `]+)`)
+
+func typedToken(text string) (string, bool) {
+	m := typedTokenPattern.FindStringSubmatch(text)
+	if m == nil {
+		return "", false
+	}
+	return strings.TrimRight(m[1], ".,;:!?)"), true
+}
 
 func (a *Agent) ConfirmOnScreen(s *Session, token string) (ui.Response, error) {
+	return a.confirm(s, token, pressedNote, "confirm_on_screen")
+}
+
+func (a *Agent) confirm(s *Session, token, note, intent string) (ui.Response, error) {
 	s.turn++
 	st := &turnState{reads: map[string]string{}}
 	res, err := a.exec.ConfirmOnScreen(s.UserID, s.turn, token)
@@ -153,9 +175,9 @@ func (a *Agent) ConfirmOnScreen(s *Session, token string) (ui.Response, error) {
 		return systemReply(s, st, "confirmation_failed", "The confirmation could not be processed. Please try again.", err.Error()), err
 	}
 	a.record(s, "screen", map[string]any{"content": json.RawMessage(res.Content)})
-	s.addUser(anthropic.NewBetaTextBlock(screenNote + " The user acted on the confirmation screen, without you. Result: " + res.Content))
+	s.addUser(anthropic.NewBetaTextBlock(note + res.Content))
 
-	base := ui.Audit{UserID: string(s.UserID), Intent: "confirm_on_screen"}
+	base := ui.Audit{UserID: string(s.UserID), Intent: intent}
 	if act := res.Outcome.Action; act != "" {
 		base.ToolsCalled = []string{string(act)}
 	}

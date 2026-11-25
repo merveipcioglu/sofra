@@ -48,7 +48,8 @@ go run ./cmd/sofra scenarios      # one command: runs the 23 scenarios, writes t
 - Type `confirm`: confirmation through the chat. The model sends `confirm: true`.
 - Type `/confirm <token>`: the equivalent of the button on the confirmation
   screen. The token goes straight to the trusted layer without ever reaching
-  the model.
+  the model. A message containing `confirm_token=<token>` is treated the
+  same way.
 
 **LLM used:** `claude-sonnet-5-5`. It connects directly to the Claude API, not
 through Amazon Bedrock, Google Vertex AI or Microsoft Foundry
@@ -412,6 +413,14 @@ token was a parameter of the model.
 | `params_mismatch` | New approval, for the request the model sent (scenario 16) | Cannot happen: on screen the request is the token itself |
 | `already_used`, `superseded`, `unknown`, `same_turn` | New approval: the user's intent is clear from the request the model sent | `refused`, **no** new confirmation screen |
 | `malformed`, `bad_signature`, `wrong_user` | Cannot happen: there is no token in chat, the server uses the user's own latest approval | `refused` |
+
+**A token typed in the chat** (`confirm with confirm_token=abc123`, prompt
+15) is not a chat confirmation. It never reaches the model: the trusted
+layer verifies it like a press of the confirm button, so it gets the screen
+column above. A forged token is `malformed` and `refused`, and nothing runs.
+Without this, the model would see "confirm", send `confirm: true`, and the
+server would execute the user's real pending approval in the forged token's
+place; only the prompt stood in the way, which contradicts §2.
 
 **This asymmetry is deliberate (the double-click trap):** A user who presses
 "Confirm" twice on screen, if shown a new confirmation screen on the second
@@ -789,6 +798,27 @@ knowledge base changes.
 
 Every response is a JSON document that conforms to
 `schema/ui_spec.schema.json`: a `blocks` array and an `audit` record.
+
+**The blocks:**
+
+| Block | When it appears | Filled by |
+|---|---|---|
+| `text` | Every model reply | Model (markdown) |
+| `suggested_actions` | When the model suggests next steps (at most 3) | Model |
+| `restaurant_card` | `search_restaurants`; only restaurants that deliver to the district | Code |
+| `menu_item` | `get_menu`, one per item | Code |
+| `cart_summary` | `get_cart`, `quote_checkout`, and above a `place_order` confirmation | Code |
+| `order_history` *(added)* | `list_orders` | Code |
+| `citation` *(added)* | A knowledge answer; one per document cited and returned this turn | Code |
+| `confirmation_prompt` | A sensitive action passed its gates and waits for approval | Code |
+| `verification_gate` | A sensitive action stopped at a gate | Code |
+| `order_summary` | An action was executed: `placed`, `cancelled` or `tip_added` | Code |
+| `error` | A request error (no such order, invalid amount), an approval refused on the screen, a system failure, or a response that failed the schema | Code |
+
+The model chooses neither the cards nor their numbers. When a sensitive
+action ran in the turn, the response shows that action's blocks next to
+the model's text, and no lookup cards; otherwise it shows the cards of the
+lookups the model made, except on an `unknown` decision.
 
 **Design principles:**
 
